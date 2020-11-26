@@ -1,4 +1,3 @@
-import apis from './httpService';
 import http from './httpService';
 
 const apiEndpoint = '/publicPuzzles';

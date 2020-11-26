@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import colors from '../config/colors';
 import LeaderboardRow from './LeaderboardRow';
 

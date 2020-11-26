@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:4000/api';
-//'https://rocky-gorge-77017.herokuapp.com/api';
-//process.env.REACT_APP_API_URL;
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 axios.interceptors.response.use(null, (error) => {
     const expectedError =
