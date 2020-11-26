@@ -85,6 +85,8 @@ class Create extends Form {
         } catch (ex) {
             if (ex.response) {
                 alert(ex.response.data);
+            } else {
+                alert('Error creating game');
             }
         }
     };
@@ -103,7 +105,7 @@ class Create extends Form {
                 >
                     Create a Puzzle
                 </div>
-                <form autocomplete="off" onSubmit={this.handleSubmit}>
+                <form autoComplete="off" onSubmit={this.handleSubmit}>
                     {this.renderSelect('hint', 'Hint', hints, 'value')}
                     {this.renderInput('answer', 'Answer')}
                     {this.renderSelect(

@@ -34,7 +34,15 @@ class PublicPuzzle extends Component {
                                     onUpdateGame(response.data);
                                 } catch (ex) {
                                     console.log(ex);
-                                    this.setState({ error: ex.response.data });
+                                    if (ex.response) {
+                                        this.setState({
+                                            error: ex.response.data,
+                                        });
+                                    } else {
+                                        this.setState({
+                                            error: 'Error starting game',
+                                        });
+                                    }
                                 }
                             }
                         }}

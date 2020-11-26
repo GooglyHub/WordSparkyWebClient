@@ -26,7 +26,11 @@ class Games extends Component {
             console.log(ex);
             const newState = { ...this.state };
             newState.games = [];
-            newState.error = ex.response.data;
+            if (ex.response) {
+                newState.error = ex.response.data;
+            } else {
+                newState.error = 'Error fetching games';
+            }
             this.setState(newState);
         }
     }
@@ -99,7 +103,7 @@ class Games extends Component {
         return (
             <>
                 <div style={{ marginLeft: 20, marginRight: 20 }}>
-                    {this.state.error && <span>Couldn't fetch games</span>}
+                    {this.state.error && <span>{this.state.error}</span>}
                 </div>
                 {this.state.games.map((game) => {
                     return (

@@ -24,7 +24,11 @@ class GuessLetters extends Component {
         } catch (ex) {
             console.log(ex);
             const newState = { ...this.state };
-            newState.error = ex.response.data;
+            if (ex.response) {
+                newState.error = ex.response.data;
+            } else {
+                newState.error = 'Error submitting request';
+            }
             this.setState(newState);
         }
     };

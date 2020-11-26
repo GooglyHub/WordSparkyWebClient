@@ -95,9 +95,11 @@ const getAgeString = (x) => {
     return `${years} years ago`;
 };
 
-export default {
+const utils = {
     decompress,
     getBoardString,
     getBoardStringForString,
     getAgeString,
 };
+
+export default utils;

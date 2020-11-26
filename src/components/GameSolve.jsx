@@ -159,7 +159,11 @@ class GameSolve extends Component {
             onUpdateGame(response.data);
         } catch (ex) {
             console.log(ex);
-            newState.error = ex.response.data;
+            if (ex.response) {
+                newState.error = ex.response.data;
+            } else {
+                newState.error = 'Error submitting request';
+            }
             this.setState(newState);
         }
     };

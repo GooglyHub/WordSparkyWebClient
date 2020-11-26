@@ -25,11 +25,13 @@ class LoginForm extends Form {
             const { state } = this.props.location;
             window.location = state ? state.from.pathname : '/';
         } catch (ex) {
+            const errors = { ...this.state.errors };
             if (ex.response) {
-                const errors = { ...this.state.errors };
                 errors.password = ex.response.data;
-                this.setState({ errors });
+            } else {
+                errors.password = 'Error logging in';
             }
+            this.setState({ errors });
         }
     };
 

@@ -19,6 +19,11 @@ class Leaderboard extends Component {
             console.log(ex);
             if (ex.response) {
                 this.setState({ data: [], error: ex.response.data });
+            } else {
+                this.setState({
+                    data: [],
+                    error: 'Error fetching leaderboard',
+                });
             }
         }
     }
@@ -27,9 +32,7 @@ class Leaderboard extends Component {
         return (
             <>
                 <div style={{ marginLeft: 20, marginRight: 20 }}>
-                    {this.state.error && (
-                        <span>Couldn't retrieve leaderboard</span>
-                    )}
+                    {this.state.error && <span>{this.state.error}</span>}
                 </div>
                 {this.state.data.map((item) => (
                     <LeaderboardTable
