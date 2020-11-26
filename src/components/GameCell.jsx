@@ -12,6 +12,7 @@ function GameCell({
     height = 30,
     width = 30,
     onPress,
+    changeColorOnHover = false,
 }) {
     const GameCellComponent = (
         <div
@@ -29,12 +30,12 @@ function GameCell({
             {cell.key !== ' ' &&
                 ((cell.key === 'DEL' && (
                     <div
+                        className={changeColorOnHover ? 'hoverable-key' : ''}
                         style={{
                             borderWidth: 2,
                             borderStyle: 'solid',
                             borderRadius: 50,
                             borderColor: colors.black,
-                            backgroundColor: 'yellow',
                             textAlign: 'center',
                             textAlignVertical: 'center',
                             cursor: 'pointer',
@@ -49,11 +50,13 @@ function GameCell({
                     </div>
                 )) || (
                     <div
+                        className={changeColorOnHover ? 'hoverable-key' : ''}
                         style={getStylesForCell(
                             cell,
                             cursor &&
                                 cursor.row === rowIdx &&
-                                cursor.col === colIdx
+                                cursor.col === colIdx,
+                            changeColorOnHover
                         )}
                     >
                         {cell.key}
@@ -73,7 +76,7 @@ function GameCell({
     }
 }
 
-const getStylesForCell = (cell, hasCursor) => {
+const getStylesForCell = (cell, hasCursor, changeColorOnHover) => {
     const style = {
         borderRadius: 5,
         borderWidth: 2,
@@ -101,7 +104,11 @@ const getStylesForCell = (cell, hasCursor) => {
         style.backgroundColor = colors.wrong;
         style.color = colors.black;
     } else {
-        style.backgroundColor = colors.given;
+        if (!changeColorOnHover) {
+            // if changeColorOnHover is true, do not set backgroundColor here
+            // Let it be set by the class name "hoverable-key" via css
+            style.backgroundColor = colors.given;
+        }
         style.color = colors.black;
     }
     if (hasCursor) {

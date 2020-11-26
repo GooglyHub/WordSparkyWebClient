@@ -13,3 +13,11 @@
 .my-card-header:hover {
     background-color: #ffb17a;
 }
+
+.hoverable-key:hover {
+    background-color: orange;
+}
+
+.hoverable-key {
+    background-color: yellow;
+}

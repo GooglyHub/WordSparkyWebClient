@@ -10,6 +10,7 @@ function GameRow({
     height,
     width,
     onPress,
+    changeColorOnHover = false,
 }) {
     return (
         <div
@@ -32,6 +33,7 @@ function GameRow({
                     marginHorizontal={marginHorizontal}
                     onPress={onPress}
                     width={width}
+                    changeColorOnHover={changeColorOnHover}
                 ></GameCell>
             ))}
         </div>

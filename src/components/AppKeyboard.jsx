@@ -87,6 +87,7 @@ function AppKeyboard({ disabledKeys = [], onPress }) {
                     width={32}
                     key={idx}
                     onPress={onPress}
+                    changeColorOnHover
                 />
             ))}
         </div>
