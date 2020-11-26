@@ -13,39 +13,58 @@ const NavBar = ({ user }) => {
                     style={{ marginRight: 20 }}
                     alt="cute shark on an orange background"
                 />
-                <li>
-                    <NavLink className="nav-item nav-link" to="/home">
-                        Home
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink className="nav-item nav-link" to="/create">
-                        Create
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink className="nav-item nav-link" to="/leaderboard">
-                        Leaderboard
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink className="nav-item nav-link" to="/account">
-                        Account
-                    </NavLink>
-                </li>
-                {!user && (
-                    <li>
-                        <NavLink className="nav-item nav-link" to="/login">
-                            Login
-                        </NavLink>
-                    </li>
-                )}
                 {user && (
-                    <li>
-                        <NavLink className="nav-item nav-link" to="/logout">
-                            Logout
-                        </NavLink>
-                    </li>
+                    <>
+                        <li>
+                            <NavLink className="nav-item nav-link" to="/home">
+                                Home
+                            </NavLink>
+                        </li>
+
+                        <li>
+                            <NavLink className="nav-item nav-link" to="/create">
+                                Create
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="nav-item nav-link"
+                                to="/leaderboard"
+                            >
+                                Leaderboard
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="nav-item nav-link"
+                                to="/account"
+                            >
+                                Account
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink className="nav-item nav-link" to="/logout">
+                                Logout
+                            </NavLink>
+                        </li>
+                    </>
+                )}
+                {!user && (
+                    <>
+                        <li>
+                            <NavLink className="nav-item nav-link" to="/login">
+                                Login
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                className="nav-item nav-link"
+                                to="/register"
+                            >
+                                Register
+                            </NavLink>
+                        </li>
+                    </>
                 )}
             </ul>
         </nav>

@@ -230,6 +230,8 @@ class ViewSolve extends Component {
                             viewSolve({ gameId: this.props.gameId }); // does not need to await
                             this.startAnimation();
                             this.setState({ expanded: true });
+                        } else {
+                            this.setState({ expanded: false });
                         }
                     }}
                 ></CardHeader>

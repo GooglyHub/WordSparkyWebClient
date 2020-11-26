@@ -46,6 +46,16 @@ class LettersInput extends Component {
         this.props.onChosenLetters(s);
     };
 
+    onKeyPress = (key) => {
+        // need to check that the key is not disabled
+        if (
+            key.length > 1 ||
+            (key.length === 1 && !this.state.letters.includes(key))
+        ) {
+            this.handlePress({ key });
+        }
+    };
+
     handlePress = (data) => {
         const key = data.key;
         if (key === 'DEL') {
@@ -89,6 +99,25 @@ class LettersInput extends Component {
                         paddingVertical: 5,
                         backgroundColor: colors.secondary,
                         alignItems: 'center',
+                    }}
+                    tabIndex="0"
+                    onKeyUp={(event) => {
+                        event.stopPropagation();
+                        let key = event.key;
+                        if (key.length === 1 && key >= 'a' && key <= 'z') {
+                            key = key.toUpperCase();
+                        }
+                        if (key === 'Backspace') {
+                            this.onKeyPress('DEL');
+                        } else if (key === 'Enter') {
+                            this.onKeyPress('Enter');
+                        } else if (
+                            key.length === 1 &&
+                            key >= 'A' &&
+                            key <= 'Z'
+                        ) {
+                            this.onKeyPress(key);
+                        }
                     }}
                 >
                     {this.state.letters.map((letter, idx) => (

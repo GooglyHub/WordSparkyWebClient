@@ -44,9 +44,7 @@ class Create extends Form {
     async componentDidMount() {
         try {
             const response = await getFriends();
-            const newState = { ...this.state };
-            newState.friends = response.data;
-            this.setState(newState);
+            this.setState({ friends: response.data });
         } catch (ex) {
             console.log(ex);
         }
@@ -71,13 +69,13 @@ class Create extends Form {
             });
             // setCoins(coins + 1);
             alert('Puzzle has been created');
-            const newState = { ...this.state };
-            newState.data = {
-                hint: undefined,
-                answer: '',
-                solver: undefined,
-            };
-            this.setState(newState);
+            this.setState({
+                data: {
+                    hint: undefined,
+                    answer: '',
+                    solver: undefined,
+                },
+            });
             const elements = document.getElementsByTagName('select');
             for (let i = 0; i < elements.length; ++i) {
                 elements[i].selectedIndex = 0;

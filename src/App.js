@@ -10,6 +10,7 @@ import Leaderboard from './components/Leaderboard';
 import Account from './components/Account';
 import { getCurrentUser } from './services/authService';
 import ProtectedRoute from './components/common/protectedRoute';
+import Register from './components/Register';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                 <Switch>
                     <Route path="/login" component={LoginForm}></Route>
                     <Route path="/logout" component={Logout}></Route>
+                    <Route path="/register" component={Register}></Route>
                     <ProtectedRoute
                         path="/home"
                         component={Games}

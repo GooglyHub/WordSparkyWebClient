@@ -23,20 +23,20 @@ class GuessLetters extends Component {
             // if (response.data.state === 'SOLVED') coins += 1;
         } catch (ex) {
             console.log(ex);
-            const newState = { ...this.state };
             if (ex.response) {
-                newState.error = ex.response.data;
+                this.setState({
+                    error: ex.response.data,
+                });
             } else {
-                newState.error = 'Error submitting request';
+                this.setState({
+                    error: 'Error submitting request',
+                });
             }
-            this.setState(newState);
         }
     };
 
     setExpanded = (expanded) => {
-        const newState = { ...this.state };
-        newState.expanded = expanded;
-        this.setState(newState);
+        this.setState({ expanded });
     };
 
     render() {
@@ -46,7 +46,7 @@ class GuessLetters extends Component {
             <>
                 <CardHeader
                     onClick={() => {
-                        this.setExpanded(true);
+                        this.setExpanded(!this.state.expanded);
                     }}
                     title={
                         isPublic

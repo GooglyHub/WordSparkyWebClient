@@ -3,6 +3,8 @@ import gameStates from '../common/gameStates';
 import { getGames } from '../services/gamesService';
 import { getPuzzles } from '../services/publicPuzzlesService';
 import Card from './Card';
+import { getCurrentUser } from '../services/authService';
+import PublicPuzzle from './PublicPuzzle';
 
 class Games extends Component {
     state = {
@@ -15,23 +17,23 @@ class Games extends Component {
         try {
             const response = await getGames();
             const response2 = await getPuzzles();
-            const newState = { ...this.state };
-            newState.games = this.sortGames([
-                ...response.data,
-                ...response2.data,
-            ]);
-            newState.error = null;
-            this.setState(newState);
+            this.setState({
+                games: this.sortGames([...response.data, ...response2.data]),
+                error: null,
+            });
         } catch (ex) {
             console.log(ex);
-            const newState = { ...this.state };
-            newState.games = [];
             if (ex.response) {
-                newState.error = ex.response.data;
+                this.setState({
+                    games: [],
+                    error: ex.response.data,
+                });
             } else {
-                newState.error = 'Error fetching games';
+                this.setState({
+                    games: [],
+                    error: 'Error fetching games',
+                });
             }
-            this.setState(newState);
         }
     }
 
@@ -46,24 +48,24 @@ class Games extends Component {
         this.setState({
             games: newGames,
             activeGameId: newGame._id,
-            error: this.state.error,
         });
     }
 
     sortGames = (unsortedGames) => {
         const newGames = [...unsortedGames];
+        const me = getCurrentUser()._id;
         const getFirstTieBreaker = (game) => {
             if (game.solver && game.state === gameStates.SOLVED) return 0;
             if (
                 game.solver &&
                 game.state === gameStates.SOLVING &&
-                game.solver._id === this.me
+                game.solver._id === me
             )
                 return 1;
             if (
                 game.solver &&
                 game.state === gameStates.NEW &&
-                game.solver._id === this.me
+                game.solver._id === me
             )
                 return 2;
             if (game.solver) return 3;

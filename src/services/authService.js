@@ -10,6 +10,10 @@ const login = async (email, password) => {
     localStorage.setItem(tokenKey, authToken);
 };
 
+const loginWithToken = (authToken) => {
+    localStorage.setItem(tokenKey, authToken);
+};
+
 const logout = () => {
     localStorage.removeItem(tokenKey);
 };
@@ -28,4 +32,4 @@ const getCurrentUser = () => {
 
 http.setJwt(getJwt());
 
-export { login, logout, getCurrentUser };
+export { login, loginWithToken, logout, getCurrentUser };

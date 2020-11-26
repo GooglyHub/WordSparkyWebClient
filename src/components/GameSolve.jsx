@@ -121,50 +121,65 @@ class GameSolve extends Component {
     }
 
     setExpanded = (expanded) => {
-        const newState = { ...this.state };
-        newState.expanded = expanded;
-        this.setState(newState);
+        this.setState({ expanded });
     };
 
     // This is called when the user clicks on one of the
     // "?" cells to move the cursor there
     handleCursorPress = ({ row, col, idx }) => {
-        const newState = { ...this.state };
-        newState.cursor = { row, col, idx };
-        this.setState(newState);
+        this.setState({ cursor: { row, col, idx } });
     };
 
     handleSubmit = async () => {
         const { letters } = this.state;
         const { gameId, onUpdateGame } = this.props;
-        const newState = { ...this.state };
 
-        newState.error = null;
         try {
             const response = await solvePuzzle({
                 guess: letters.join(''),
                 gameId,
             });
             if (response.data.state === 'SOLVED') {
-                newState.failed = false;
-                newState.solved = true;
+                this.setState({
+                    failed: false,
+                    solved: true,
+                    error: null,
+                });
                 // if (guessedLetters.length <= 1) {
                 //    setCoins(coins + 1);
                 //}
             } else if (response.data.state === 'SOLVING') {
-                newState.failed = true;
-                newState.solved = false;
+                this.setState({
+                    failed: true,
+                    solved: false,
+                    error: null,
+                });
             }
-            this.setState(newState);
             onUpdateGame(response.data);
         } catch (ex) {
             console.log(ex);
             if (ex.response) {
-                newState.error = ex.response.data;
+                this.setState({
+                    error: ex.response.data,
+                });
             } else {
-                newState.error = 'Error submitting request';
+                this.setState({
+                    error: 'Error submitting request',
+                });
             }
-            this.setState(newState);
+        }
+    };
+
+    handleKeyPress = (key) => {
+        // need to check that the key is not disabled
+        if (
+            key.length > 1 ||
+            (key.length === 1 &&
+                !this.state.eliminatedLetters[
+                    this.state.cursorToPos[this.state.cursor.idx]
+                ].includes(key))
+        ) {
+            this.handlePress({ key });
         }
     };
 
@@ -201,11 +216,11 @@ class GameSolve extends Component {
             newCells[newCursor.row][newCursor.col].state = 'unknown';
             newCells[newCursor.row][newCursor.col].key = '?';
 
-            const newState = { ...this.state };
-            newState.cursor = newCursor;
-            newState.letters = newLetters;
-            newState.cells = newCells;
-            this.setState(newState);
+            this.setState({
+                cursor: newCursor,
+                letters: newLetters,
+                cells: newCells,
+            });
         } else {
             const newCells = [];
             // deep clone
@@ -224,11 +239,11 @@ class GameSolve extends Component {
             }
             const newCursor = cursorPositions[newCursorIdx];
 
-            const newState = { ...this.state };
-            newState.cursor = newCursor;
-            newState.letters = newLetters;
-            newState.cells = newCells;
-            this.setState(newState);
+            this.setState({
+                cursor: newCursor,
+                letters: newLetters,
+                cells: newCells,
+            });
         }
     };
 
@@ -251,7 +266,7 @@ class GameSolve extends Component {
             <>
                 <CardHeader
                     onClick={() => {
-                        this.setExpanded(true);
+                        this.setExpanded(!this.state.expanded);
                     }}
                     title={
                         isPublic
@@ -289,6 +304,7 @@ class GameSolve extends Component {
                         hint={hint}
                         board={cells}
                         onPress={this.handleCursorPress}
+                        onKeyPress={this.handleKeyPress}
                         cursor={cursor}
                     ></GameBody>
                 )}
