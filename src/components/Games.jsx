@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
 import { getGames } from '../services/gamesService';
 import { getPuzzles } from '../services/publicPuzzlesService';
-import Card from './Card';
 import { getCurrentUser } from '../services/authService';
-import PublicPuzzle from './PublicPuzzle';
+import Card from './Card';
 
 class Games extends Component {
     state = {

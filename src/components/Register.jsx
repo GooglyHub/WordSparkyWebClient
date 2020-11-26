@@ -1,7 +1,6 @@
 import React from 'react';
 import Form from './common/form';
 import Joi from 'joi-browser';
-import { Redirect } from 'react-router-dom';
 import { register } from '../services/usersService';
 import { loginWithToken } from '../services/authService';
 

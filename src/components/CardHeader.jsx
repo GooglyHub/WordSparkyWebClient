@@ -6,17 +6,17 @@ function CardHeader({ title, onClick }) {
         <div
             style={{
                 flexDirection: 'row',
-                backgroundColor: colors.light,
+                cursor: 'pointer',
             }}
             onClick={onClick}
         >
             <div
+                className="my-card-header"
                 style={{
                     paddingLeft: 10,
                     paddingRight: 10,
                     paddingTop: 5,
                     paddingBottom: 5,
-                    backgroundColor: colors.light,
                     flex: 1,
                 }}
             >
