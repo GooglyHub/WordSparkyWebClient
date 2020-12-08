@@ -22,4 +22,15 @@ const viewSolve = (game) => {
     return http.post(apiEndpoint + '/view', game);
 };
 
-export { addGame, getGames, guessLetters, solvePuzzle, viewSolve };
+const revealLetter = (data) => {
+    return http.get(apiEndpoint + '/reveal', { params: data });
+};
+
+export {
+    addGame,
+    getGames,
+    guessLetters,
+    solvePuzzle,
+    viewSolve,
+    revealLetter,
+};

@@ -9,15 +9,16 @@ import { getCoins } from '../services/coinsService';
 const NavBar = ({ user }) => {
     const [coins, setCoins] = useState(0);
 
-    useEffect(() => {
-        async function fetchCoins() {
-            try {
-                const response = await getCoins();
-                setCoins(response.data.coins);
-            } catch (ex) {
-                console.log(ex);
-            }
+    const fetchCoins = async () => {
+        try {
+            const response = await getCoins();
+            setCoins(response.data.coins);
+        } catch (ex) {
+            console.log(ex);
         }
+    };
+
+    useEffect(() => {
         fetchCoins();
     }, []);
 

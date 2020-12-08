@@ -4,7 +4,8 @@ import GameBody from './GameBody';
 import utils from '../common/utils';
 import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
-import { solvePuzzle } from '../services/gamesService';
+import { solvePuzzle, revealLetter } from '../services/gamesService';
+import HelpIcon from '@material-ui/icons/Help';
 
 /*
 GameSolve component
@@ -247,6 +248,27 @@ class GameSolve extends Component {
         }
     };
 
+    async handleReveal() {
+        try {
+            const response = await revealLetter({
+                gameId: this.props.gameId,
+                cursorIdx: this.state.cursor.idx,
+                price: 10,
+            });
+            this.handlePress({ key: response.data.letter });
+            // setCoins(response.data.coins);
+        } catch (ex) {
+            alert(`Error: ${ex}`);
+            console.log(ex);
+        }
+    }
+
+    handleHintPress() {
+        if (window.confirm('Spend 10 coins to reveal the letter?')) {
+            this.handleReveal();
+        }
+    }
+
     render() {
         const {
             cells,
@@ -325,6 +347,35 @@ class GameSolve extends Component {
                         >
                             <div
                                 style={{
+                                    position: 'absolute',
+                                    right: 20,
+                                    margin: 5,
+                                    flexDirection: 'row',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => {
+                                    this.handleHintPress();
+                                }}
+                            >
+                                <HelpIcon
+                                    style={{
+                                        backgroundColor: colors.primary,
+                                        color: colors.light,
+                                        borderRadius: 13,
+                                        width: 25,
+                                        height: 25,
+                                        alignSelf: 'center',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                        display: 'flex',
+                                        marginRight: 5,
+                                    }}
+                                    fontSize="default"
+                                />
+                            </div>
+                            <div
+                                style={{
                                     borderWidth: 2,
                                     borderColor: colors.primary,
                                     borderStyle: 'solid',
@@ -380,33 +431,5 @@ class GameSolve extends Component {
 //             setCoins(response.data.coins);
 //         }
 //     };
-
-//     const handleHintPress = () => {
-//         Alert.alert(
-//             '',
-//             `Spend ${prices.revealPrice} coins to reveal the letter?`,
-//             [
-//                 {
-//                     text: 'Yes',
-//                     onPress: handleReveal,
-//                 },
-//                 {
-//                     text: 'No',
-//                     onPress: () => {},
-//                     style: 'cancel',
-//                 },
-//             ],
-//             { cancelable: false }
-//         );
-//     };
-
-// }
-
-//     hintContainer: {
-//         position: 'absolute',
-//         right: 0,
-//         margin: 5,
-//         flexDirection: 'row',
-//     },
 
 export default GameSolve;
