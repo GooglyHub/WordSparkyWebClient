@@ -7,7 +7,6 @@ import StaticGame from './StaticGame';
 import GuessLetters from './GuessLetters';
 import GameSolve from './GameSolve';
 import ViewSolve from './ViewSolve';
-import PublicPuzzle from './PublicPuzzle';
 
 class Card extends Component {
     render() {
@@ -31,6 +30,7 @@ class Card extends Component {
             >
                 {game.solver &&
                     game.solver._id !== me &&
+                    game.creator &&
                     game.creator._id === me &&
                     game.state !== gameStates.SOLVED && (
                         <StaticGame
@@ -47,7 +47,13 @@ class Card extends Component {
                         <GuessLetters
                             boardString={utils.getBoardString(game)}
                             createTime={game.createTime}
-                            creator={game.creator.displayName}
+                            creator={
+                                game.creator
+                                    ? game.creator.displayName
+                                    : game.creatorBot
+                                    ? game.creatorBot.name
+                                    : ''
+                            }
                             expandedInitially={game._id === activeGameId}
                             gameId={game._id}
                             hint={game.hint}
@@ -61,7 +67,13 @@ class Card extends Component {
                         game.state === gameStates.SOLVED) && (
                         <GameSolve
                             boardString={utils.getBoardString(game)}
-                            creator={game.creator.displayName}
+                            creator={
+                                game.creator
+                                    ? game.creator.displayName
+                                    : game.creatorBot
+                                    ? game.creatorBot.name
+                                    : ''
+                            }
                             expandedInitially={
                                 game._id === activeGameId ||
                                 game.state === gameStates.SOLVER
@@ -76,6 +88,7 @@ class Card extends Component {
                         />
                     )}
                 {game.solver &&
+                    game.creator &&
                     game.creator._id === me &&
                     game.state === gameStates.SOLVED && (
                         <ViewSolve
@@ -89,17 +102,6 @@ class Card extends Component {
                             solver={game.solver.displayName}
                         ></ViewSolve>
                     )}
-                {!game.solver && (
-                    <PublicPuzzle
-                        boardString={utils.getBoardStringForString(game.answer)}
-                        createTime={game.createTime}
-                        creator={game.creator.displayName}
-                        puzzleId={game._id}
-                        hint={game.hint}
-                        myPuzzle={game.creator._id === me}
-                        onUpdateGame={onUpdateGame}
-                    ></PublicPuzzle>
-                )}
             </div>
         );
     }

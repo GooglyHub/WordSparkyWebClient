@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
 import { getGames } from '../services/gamesService';
-import { getPuzzles } from '../services/publicPuzzlesService';
 import { getCurrentUser } from '../services/authService';
 import Card from './Card';
 
@@ -15,9 +14,8 @@ class Games extends Component {
     async componentDidMount() {
         try {
             const response = await getGames();
-            const response2 = await getPuzzles();
             this.setState({
-                games: this.sortGames([...response.data, ...response2.data]),
+                games: this.sortGames([...response.data]),
                 error: null,
             });
         } catch (ex) {

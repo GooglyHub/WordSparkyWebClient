@@ -17,12 +17,24 @@ function setJwt(jwt) {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;
 }
 
+function unsetAuthHeader() {
+    const ret = axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common['Authorization'];
+    return ret;
+}
+
+function setAuthHeader(header) {
+    axios.defaults.headers.common['Authorization'] = header;
+}
+
 const apis = {
     get: axios.get,
     post: axios.post,
     put: axios.put,
     delete: axios.delete,
     setJwt,
+    unsetAuthHeader,
+    setAuthHeader,
 };
 
 export default apis;

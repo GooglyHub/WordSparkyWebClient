@@ -89,6 +89,16 @@ const NavBar = ({ user }) => {
                                 Account
                             </NavLink>
                         </li>
+                        {user && user.isAdmin && (
+                            <li>
+                                <NavLink
+                                    className="nav-item nav-link"
+                                    to="/bots"
+                                >
+                                    Bots
+                                </NavLink>
+                            </li>
+                        )}
                         <li>
                             <NavLink className="nav-item nav-link" to="/logout">
                                 Logout

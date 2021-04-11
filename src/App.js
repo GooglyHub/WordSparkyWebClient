@@ -10,7 +10,9 @@ import Leaderboard from './components/Leaderboard';
 import Account from './components/Account';
 import { getCurrentUser } from './services/authService';
 import ProtectedRoute from './components/common/protectedRoute';
+import ProtectedAdminRoute from './components/common/protectedAdminRoute';
 import Register from './components/Register';
+import Bots from './components/Bots';
 import './App.css';
 
 function App() {
@@ -38,6 +40,10 @@ function App() {
                         path="/account"
                         component={Account}
                     ></ProtectedRoute>
+                    <ProtectedAdminRoute
+                        path="/bots"
+                        component={Bots}
+                    ></ProtectedAdminRoute>
                     <Route path="/not-found" component={NotFound}></Route>
                     <Redirect from="/" exact to="/home"></Redirect>
                     <Redirect to="/not-found"></Redirect>
