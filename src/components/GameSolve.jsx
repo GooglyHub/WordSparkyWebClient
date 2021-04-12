@@ -5,7 +5,6 @@ import utils from '../common/utils';
 import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
 import { solvePuzzle, revealLetter } from '../services/gamesService';
-import HelpIcon from '@material-ui/icons/Help';
 
 /*
 GameSolve component
@@ -264,7 +263,7 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        if (window.confirm('Spend 10 coins to reveal the letter?')) {
+        if (window.confirm('Spend 5 coins to get a hint on this letter?')) {
             this.handleReveal();
         }
     }
@@ -357,7 +356,8 @@ class GameSolve extends Component {
                                     this.handleHintPress();
                                 }}
                             >
-                                <HelpIcon
+                                <span
+                                    class="mdi mdi-lightbulb-on-outline"
                                     style={{
                                         backgroundColor: colors.primary,
                                         color: colors.light,
@@ -371,8 +371,7 @@ class GameSolve extends Component {
                                         display: 'flex',
                                         marginRight: 5,
                                     }}
-                                    fontSize="default"
-                                />
+                                ></span>
                             </div>
                             <div
                                 style={{

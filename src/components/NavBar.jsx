@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import logo from './logo.png';
-import Icon from '@material-ui/core/Icon';
 import colors from './../config/colors';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import { getCoins } from '../services/coinsService';
 
 const NavBar = ({ user }) => {
@@ -34,7 +32,7 @@ const NavBar = ({ user }) => {
                 />
                 {user && (
                     <>
-                        <Icon
+                        <span
                             style={{
                                 backgroundColor: user.color || 'blue',
                                 color: 'white',
@@ -46,11 +44,10 @@ const NavBar = ({ user }) => {
                                 alignItems: 'center',
                                 flexDirection: 'row',
                                 display: 'flex',
+                                fontSize: 30,
                             }}
-                            fontSize="default"
-                        >
-                            {user.icon || 'account'}
-                        </Icon>
+                            class={`mdi mdi-${user.icon || 'account'}`}
+                        ></span>
                         <div
                             style={{
                                 fontSize: 20,
@@ -133,9 +130,10 @@ const NavBar = ({ user }) => {
                     display: 'flex',
                 }}
             >
-                <MonetizationOnIcon
+                <span
+                    class="mdi mdi-dots-horizontal-circle-outline"
                     style={{
-                        backgroundColor: colors.primary,
+                        backgroundColor: colors.gold,
                         color: colors.light,
                         borderRadius: 13,
                         width: 25,
