@@ -3,8 +3,20 @@ import axios from 'axios';
 
 const apiEndpoint = '/bots';
 
-const getBots = () => {
+const getAllBots = () => {
     return http.get(apiEndpoint + '/all');
+};
+
+const removeBot = (bot) => {
+    return http.delete(apiEndpoint, { data: bot });
+};
+
+const addBot = (bot) => {
+    return http.put(apiEndpoint, bot);
+};
+
+const getMyBots = () => {
+    return http.get(apiEndpoint);
 };
 
 const updateBotPuzzle = (data) => {
@@ -30,6 +42,7 @@ const getHeadlines = async (categories) => {
             sort: 'popularity',
             limit: '100',
             date: getPastDayRange(),
+            sources: 'cnn,nytimes,espn,bbc,time,foxnews,yahoo',
         },
     };
     const oldHeader = http.unsetAuthHeader();
@@ -53,6 +66,7 @@ const getHeadlines = async (categories) => {
 
     // Find any categories that got left behind
     let prevCategoriesLength = 1 + categories.length;
+    delete cfg.params.sources; // accept any sources
     for (let iters = 0; iters < categories.length; iters++) {
         const lowCats = [];
         for (let i = 0; i < categories.length; i++) {
@@ -90,4 +104,11 @@ const getHeadlines = async (categories) => {
     return headlines;
 };
 
-export { getBots, updateBotPuzzle, getHeadlines };
+export {
+    getAllBots,
+    removeBot,
+    addBot,
+    getMyBots,
+    updateBotPuzzle,
+    getHeadlines,
+};

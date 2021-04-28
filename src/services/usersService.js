@@ -6,4 +6,8 @@ const register = (userInfo) => {
     return http.post(apiEndpoint, userInfo);
 };
 
-export { register };
+const updateProfile = (userInfo) => {
+    return http.put(apiEndpoint, userInfo);
+};
+
+export { register, updateProfile };

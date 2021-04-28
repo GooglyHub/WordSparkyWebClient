@@ -16,9 +16,10 @@ import Bots from './components/Bots';
 import './App.css';
 
 function App() {
+    const currUser = getCurrentUser();
     return (
         <>
-            <NavBar user={getCurrentUser()}></NavBar>
+            <NavBar user={currUser}></NavBar>
             <main className="my-container">
                 <Switch>
                     <Route path="/login" component={LoginForm}></Route>
@@ -38,7 +39,7 @@ function App() {
                     ></ProtectedRoute>
                     <ProtectedRoute
                         path="/account"
-                        component={Account}
+                        render={() => <Account user={currUser}></Account>}
                     ></ProtectedRoute>
                     <ProtectedAdminRoute
                         path="/bots"

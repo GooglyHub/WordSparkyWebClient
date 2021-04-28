@@ -1,7 +1,7 @@
 import React from 'react';
 import Joi from 'joi-browser';
 import {
-    getBots,
+    getAllBots,
     updateBotPuzzle,
     getHeadlines,
 } from '../services/botsService';
@@ -20,13 +20,15 @@ class Bots extends Form {
         data: {},
         suggestions: [],
         errors: {},
+        error: '',
+        message: '',
     };
 
     schema = {};
 
     async componentDidMount() {
         try {
-            const response = await getBots();
+            const response = await getAllBots();
             const newBots = response.data;
             const n = newBots.length;
             const newData = {};
@@ -84,12 +86,21 @@ class Bots extends Form {
                     answer,
                 });
             }
-            alert('Bot puzzles have been updated');
+            this.setState({
+                error: '',
+                message: 'Bot puzzles have been updated',
+            });
         } catch (ex) {
             if (ex.response) {
-                alert(ex.response.data);
+                this.setState({
+                    error: ex.response.data,
+                    message: '',
+                });
             } else {
-                alert('Error creating game');
+                this.setState({
+                    error: 'Error updating bot puzzles',
+                    message: '',
+                });
             }
         }
     };
@@ -126,6 +137,17 @@ class Bots extends Form {
                     Get Headlines
                 </button>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
+                    {this.renderButton('Submit')}
+                    {this.state.error && (
+                        <div className="alert alert-danger">
+                            {this.state.error}
+                        </div>
+                    )}
+                    {this.state.message && (
+                        <div className="alert alert-success">
+                            {this.state.message}
+                        </div>
+                    )}
                     {this.state.bots.map((bot, idx) => (
                         <div
                             key={idx}
@@ -173,7 +195,6 @@ class Bots extends Form {
                             </ul>
                         </div>
                     ))}
-                    {this.renderButton('Submit')}
                 </form>
             </>
         );

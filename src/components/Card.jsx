@@ -10,7 +10,7 @@ import ViewSolve from './ViewSolve';
 
 class Card extends Component {
     render() {
-        const { game, activeGameId, onUpdateGame } = this.props;
+        const { game, activeGameId, onUpdateGame, setCoins } = this.props;
         const me = getCurrentUser()._id;
 
         return (
@@ -57,7 +57,6 @@ class Card extends Component {
                             expandedInitially={game._id === activeGameId}
                             gameId={game._id}
                             hint={game.hint}
-                            isPublic={game.isPublic ? true : false}
                             onUpdateGame={onUpdateGame}
                         />
                     )}
@@ -82,13 +81,12 @@ class Card extends Component {
                             guesses={game.guesses}
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
-                            isPublic={game.isPublic ? true : false}
                             onUpdateGame={onUpdateGame}
+                            setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
                     )}
-                {game.solver &&
-                    game.creator &&
+                {game.creator &&
                     game.creator._id === me &&
                     game.state === gameStates.SOLVED && (
                         <ViewSolve
@@ -99,7 +97,11 @@ class Card extends Component {
                             guesses={game.guesses}
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
-                            solver={game.solver.displayName}
+                            solver={
+                                game.solver
+                                    ? game.solver.displayName
+                                    : 'Sparky Bot'
+                            }
                         ></ViewSolve>
                     )}
             </div>

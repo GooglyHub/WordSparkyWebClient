@@ -1,25 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import logo from './logo.png';
 import colors from './../config/colors';
-import { getCoins } from '../services/coinsService';
+import Icon from './common/icon';
 
 const NavBar = ({ user }) => {
-    const [coins, setCoins] = useState(0);
-
-    const fetchCoins = async () => {
-        try {
-            const response = await getCoins();
-            setCoins(response.data.coins);
-        } catch (ex) {
-            console.log(ex);
-        }
-    };
-
-    useEffect(() => {
-        fetchCoins();
-    }, []);
-
     return (
         <nav className="navbar navbar-light">
             <ul className="nav nav-pills">
@@ -32,22 +17,11 @@ const NavBar = ({ user }) => {
                 />
                 {user && (
                     <>
-                        <span
-                            style={{
-                                backgroundColor: user.color || 'blue',
-                                color: 'white',
-                                borderRadius: 20,
-                                width: 40,
-                                height: 40,
-                                alignSelf: 'center',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                flexDirection: 'row',
-                                display: 'flex',
-                                fontSize: 30,
-                            }}
-                            class={`mdi mdi-${user.icon || 'account'}`}
-                        ></span>
+                        <Icon
+                            name={user.icon || 'account'}
+                            backgroundColor={user.color || 'blue'}
+                            size={40}
+                        ></Icon>
                         <div
                             style={{
                                 fontSize: 20,
@@ -96,11 +70,6 @@ const NavBar = ({ user }) => {
                                 </NavLink>
                             </li>
                         )}
-                        <li>
-                            <NavLink className="nav-item nav-link" to="/logout">
-                                Logout
-                            </NavLink>
-                        </li>
                     </>
                 )}
                 {!user && (
@@ -121,34 +90,6 @@ const NavBar = ({ user }) => {
                     </>
                 )}
             </ul>
-            <div
-                style={{
-                    position: 'absolute',
-                    right: 20,
-                    flexDirection: 'row',
-                    alignSelf: 'center',
-                    display: 'flex',
-                }}
-            >
-                <span
-                    class="mdi mdi-dots-horizontal-circle-outline"
-                    style={{
-                        backgroundColor: colors.gold,
-                        color: colors.light,
-                        borderRadius: 13,
-                        width: 25,
-                        height: 25,
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        display: 'flex',
-                        marginRight: 5,
-                    }}
-                    fontSize="default"
-                />
-                <span>{coins}</span>
-            </div>
         </nav>
     );
 };

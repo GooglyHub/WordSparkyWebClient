@@ -6,4 +6,8 @@ const getCoins = () => {
     return http.get(apiEndpoint);
 };
 
-export { getCoins };
+const collectCoins = () => {
+    return http.post(apiEndpoint);
+};
+
+export { getCoins, collectCoins };

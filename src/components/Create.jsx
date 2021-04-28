@@ -24,11 +24,13 @@ class Create extends Form {
         friends: [],
         coins: 0,
         data: {
-            hint: undefined,
+            hint: '',
             answer: '',
-            solver: undefined,
+            solver: '',
         },
         errors: {},
+        error: '',
+        message: '',
     };
 
     schema = {
@@ -44,7 +46,15 @@ class Create extends Form {
     async componentDidMount() {
         try {
             const response = await getFriends();
-            this.setState({ friends: response.data });
+            this.setState({
+                friends: [
+                    ...response.data,
+                    {
+                        _id: -1,
+                        displayName: 'Sparky Bot',
+                    },
+                ],
+            });
         } catch (ex) {
             console.log(ex);
         }
@@ -62,30 +72,33 @@ class Create extends Form {
                     hintString = obj.value;
                 }
             }
-            await addGame({
+            const game = {
                 answer: answer.toUpperCase(),
                 hint: hintString.toUpperCase(),
                 solverId: solver,
-            });
-            // setCoins(coins + 1);
-            alert('Puzzle has been created');
+            };
+            if (solver === '-1') {
+                delete game.solverId;
+            }
+            await addGame(game);
             this.setState({
                 data: {
                     hint: undefined,
                     answer: '',
                     solver: undefined,
                 },
+                error: '',
+                message: 'Puzzle has been created',
             });
             const elements = document.getElementsByTagName('select');
             for (let i = 0; i < elements.length; ++i) {
                 elements[i].selectedIndex = 0;
             }
-        } catch (ex) {
-            if (ex.response) {
-                alert(ex.response.data);
-            } else {
-                alert('Error creating game');
-            }
+        } catch (error) {
+            this.setState({
+                error: error.message + ', ' + error.response.data,
+                message: '',
+            });
         }
     };
 
@@ -112,8 +125,24 @@ class Create extends Form {
                         this.state.friends,
                         'displayName'
                     )}
+                    {this.state.friends.length <= 1 && (
+                        <div className="alert alert-success">
+                            For now, you can only send puzzles to Sparky Bot.
+                            Add some friends to be able to send puzzles to real
+                            people.
+                        </div>
+                    )}
                     {this.renderButton('Create')}
                 </form>
+                <div style={{ height: 20 }} />
+                {this.state.error && (
+                    <div className="alert alert-danger">{this.state.error}</div>
+                )}
+                {this.state.message && (
+                    <div className="alert alert-success">
+                        {this.state.message}
+                    </div>
+                )}
             </>
         );
     }

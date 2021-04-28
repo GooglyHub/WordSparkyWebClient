@@ -5,6 +5,7 @@ import utils from '../common/utils';
 import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
 import { solvePuzzle, revealLetter } from '../services/gamesService';
+import Icon from './common/icon';
 
 /*
 GameSolve component
@@ -23,7 +24,7 @@ class GameSolve extends Component {
         cursorPositions: [],
         cursorToPos: [],
         eliminatedLetters: [],
-        error: null,
+        error: '',
         expanded: this.props.expandedInitially,
         failed: false,
         initialized: false,
@@ -111,7 +112,7 @@ class GameSolve extends Component {
             cursorPositions: initialCursorPositions,
             cursorToPos: initialCursorToPos,
             eliminatedLetters: initialEliminatedLetters,
-            error: null,
+            error: '',
             expanded: expandedInitially,
             failed: this.state.failed,
             initialized: true,
@@ -143,30 +144,20 @@ class GameSolve extends Component {
                 this.setState({
                     failed: false,
                     solved: true,
-                    error: null,
+                    error: '',
                 });
-                // if (guessedLetters.length <= 1) {
-                //    setCoins(coins + 1);
-                //}
             } else if (response.data.state === 'SOLVING') {
                 this.setState({
                     failed: true,
                     solved: false,
-                    error: null,
+                    error: '',
                 });
             }
             onUpdateGame(response.data);
-        } catch (ex) {
-            console.log(ex);
-            if (ex.response) {
-                this.setState({
-                    error: ex.response.data,
-                });
-            } else {
-                this.setState({
-                    error: 'Error submitting request',
-                });
-            }
+        } catch (error) {
+            this.setState({
+                error: error.message + ', ' + error.response.data,
+            });
         }
     };
 
@@ -252,18 +243,22 @@ class GameSolve extends Component {
             const response = await revealLetter({
                 gameId: this.props.gameId,
                 cursorIdx: this.state.cursor.idx,
-                price: 10,
             });
             this.handlePress({ key: response.data.letter });
-            // setCoins(response.data.coins);
-        } catch (ex) {
-            alert(`Error: ${ex}`);
-            console.log(ex);
+            this.props.setCoins(response.data.coins);
+        } catch (error) {
+            this.setState({
+                error: error.message + ', ' + error.response.data,
+            });
         }
     }
 
     handleHintPress() {
-        if (window.confirm('Spend 5 coins to get a hint on this letter?')) {
+        if (
+            window.confirm(
+                'Spend 5 coins to get a hint on the selected letter?'
+            )
+        ) {
             this.handleReveal();
         }
     }
@@ -282,18 +277,14 @@ class GameSolve extends Component {
             initialized,
             solved,
         } = this.state;
-        const { creator, hint, isPublic } = this.props;
+        const { creator, hint } = this.props;
         return (
             <>
                 <CardHeader
                     onClick={() => {
                         this.setExpanded(!this.state.expanded);
                     }}
-                    title={
-                        isPublic
-                            ? `Solve ${creator}'s public puzzle`
-                            : `Solve ${creator}'s puzzle`
-                    }
+                    title={`Solve ${creator}'s puzzle`}
                 ></CardHeader>
                 {expanded && solved && (
                     <span
@@ -356,22 +347,12 @@ class GameSolve extends Component {
                                     this.handleHintPress();
                                 }}
                             >
-                                <span
-                                    class="mdi mdi-lightbulb-on-outline"
-                                    style={{
-                                        backgroundColor: colors.primary,
-                                        color: colors.light,
-                                        borderRadius: 13,
-                                        width: 25,
-                                        height: 25,
-                                        alignSelf: 'center',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        flexDirection: 'row',
-                                        display: 'flex',
-                                        marginRight: 5,
-                                    }}
-                                ></span>
+                                <Icon
+                                    name="lightbulb-on-outline"
+                                    size={25}
+                                    backgroundColor={colors.primary}
+                                    marginRight={5}
+                                ></Icon>
                             </div>
                             <div
                                 style={{
@@ -412,23 +393,5 @@ class GameSolve extends Component {
         );
     }
 }
-
-//     const handleReveal = async () => {
-//         setRevealLoading(true);
-//         const response = await gamesApi.revealLetter({
-//             gameId: gameId,
-//             cursorIdx: cursor.idx,
-//             price: prices.revealPrice,
-//         });
-//         setRevealLoading(false);
-
-//         if (!response.ok) {
-//             Alert.alert('Error', response.data);
-//         } else {
-//             // Simulate the user typing in the answer
-//             handlePress({ key: response.data.letter });
-//             setCoins(response.data.coins);
-//         }
-//     };
 
 export default GameSolve;

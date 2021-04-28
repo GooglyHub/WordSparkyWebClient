@@ -6,4 +6,16 @@ const getFriends = () => {
     return http.get(apiEndpoint);
 };
 
-export { getFriends };
+const removeFriend = (friend) => {
+    return http.delete(apiEndpoint, { data: friend });
+};
+
+const addFriend = (friend) => {
+    return http.put(apiEndpoint, friend);
+};
+
+const getFriendRequests = () => {
+    return http.get(apiEndpoint + '/requests');
+};
+
+export { getFriends, removeFriend, addFriend, getFriendRequests };

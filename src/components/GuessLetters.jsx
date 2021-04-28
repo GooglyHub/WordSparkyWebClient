@@ -40,7 +40,7 @@ class GuessLetters extends Component {
     };
 
     render() {
-        const { boardString, creator, createTime, hint, isPublic } = this.props;
+        const { boardString, creator, createTime, hint } = this.props;
 
         return (
             <>
@@ -48,13 +48,9 @@ class GuessLetters extends Component {
                     onClick={() => {
                         this.setExpanded(!this.state.expanded);
                     }}
-                    title={
-                        isPublic
-                            ? `Start solving ${creator}'s public puzzle`
-                            : `${creator} sent a puzzle (${utils.getAgeString(
-                                  createTime
-                              )})`
-                    }
+                    title={`${creator} sent a puzzle (${utils.getAgeString(
+                        createTime
+                    )})`}
                 />
                 <GameBody
                     hint={hint}

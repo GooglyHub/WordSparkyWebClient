@@ -7,7 +7,7 @@ const Select = ({ name, label, options, nameField, error, ...rest }) => {
             <select {...rest} id={name} name={name} className="form-control">
                 <option value="" />
                 {options.map((option) => (
-                    <option key={option._id} value={option._id}>
+                    <option key={option._id || option.value} value={option._id}>
                         {option[nameField]}
                     </option>
                 ))}
