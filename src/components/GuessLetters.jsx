@@ -3,7 +3,12 @@ import CardHeader from './CardHeader';
 import GameBody from './GameBody';
 import utils from '../common/utils';
 import LettersInput from './LettersInput';
-import { guessLetters } from '../services/gamesService';
+import {
+    guessLetters,
+    guessLettersGuest,
+    toggleExpansion,
+} from '../services/gamesService';
+import { getCurrentUser } from '../services/authService';
 
 class GuessLetters extends Component {
     state = {
@@ -14,22 +19,32 @@ class GuessLetters extends Component {
     // This is called once the user has chosen the six letters
     // to begin a solve (e.g. R-S-T-L-N-E)
     handleChosenLetters = async (letters) => {
-        try {
-            const response = await guessLetters({
-                guess: letters,
-                gameId: this.props.gameId,
-            });
-            this.props.onUpdateGame(response.data);
-            // if (response.data.state === 'SOLVED') coins += 1;
-        } catch (ex) {
-            console.log(ex);
-            if (ex.response) {
-                this.setState({
-                    error: ex.response.data,
+        const user = getCurrentUser();
+        if (user) {
+            try {
+                const response = await guessLetters({
+                    guess: letters,
+                    gameId: this.props.gameId,
                 });
+                this.props.onUpdateGame(response.data);
+            } catch (ex) {
+                if (ex.response && ex.response.data) {
+                    this.setState({
+                        error: ex.response.data,
+                    });
+                } else {
+                    this.setState({
+                        error: 'Error submitting request',
+                    });
+                }
+            }
+        } else {
+            const newGame = guessLettersGuest(this.props.gameId, letters);
+            if (newGame) {
+                this.props.onUpdateGame(newGame);
             } else {
                 this.setState({
-                    error: 'Error submitting request',
+                    error: 'Unable to update game',
                 });
             }
         }
@@ -37,6 +52,7 @@ class GuessLetters extends Component {
 
     setExpanded = (expanded) => {
         this.setState({ expanded });
+        toggleExpansion(this.props.gameId, expanded);
     };
 
     render() {

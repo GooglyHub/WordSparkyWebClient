@@ -30,11 +30,6 @@ const AccountNavBar = () => {
                             Puzzle Bots
                         </NavLink>
                     </li>
-                    <li>
-                        <NavLink className="nav-item nav-link" to="/logout">
-                            Logout
-                        </NavLink>
-                    </li>
                 </>
             </ul>
         </nav>

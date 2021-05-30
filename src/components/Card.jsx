@@ -11,7 +11,10 @@ import ViewSolve from './ViewSolve';
 class Card extends Component {
     render() {
         const { game, activeGameId, onUpdateGame, setCoins } = this.props;
-        const me = getCurrentUser()._id;
+        const user = getCurrentUser();
+        const myId = (user && user._id) || '';
+        const solverId = (game.solver && game.solver._id) || '';
+        const creatorId = (game.creator && game.creator._id) || '';
 
         return (
             <div
@@ -29,9 +32,9 @@ class Card extends Component {
                 }}
             >
                 {game.solver &&
-                    game.solver._id !== me &&
+                    solverId !== myId &&
                     game.creator &&
-                    game.creator._id === me &&
+                    creatorId === myId &&
                     game.state !== gameStates.SOLVED && (
                         <StaticGame
                             boardString={utils.getBoardStringForString(
@@ -42,9 +45,10 @@ class Card extends Component {
                         />
                     )}
                 {game.solver &&
-                    game.solver._id === me &&
+                    solverId === myId &&
                     game.state === gameStates.NEW && (
                         <GuessLetters
+                            answer={game.answer}
                             boardString={utils.getBoardString(game)}
                             createTime={game.createTime}
                             creator={
@@ -54,17 +58,20 @@ class Card extends Component {
                                     ? game.creatorBot.name
                                     : ''
                             }
-                            expandedInitially={game._id === activeGameId}
+                            expandedInitially={
+                                game._id === activeGameId || game.active
+                            }
                             gameId={game._id}
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
                         />
                     )}
                 {game.solver &&
-                    game.solver._id === me &&
+                    solverId === myId &&
                     (game.state === gameStates.SOLVING ||
                         game.state === gameStates.SOLVED) && (
                         <GameSolve
+                            answer={game.answer}
                             boardString={utils.getBoardString(game)}
                             creator={
                                 game.creator
@@ -75,7 +82,8 @@ class Card extends Component {
                             }
                             expandedInitially={
                                 game._id === activeGameId ||
-                                game.state === gameStates.SOLVER
+                                game.state === gameStates.SOLVED ||
+                                game.active
                             }
                             gameId={game._id}
                             guesses={game.guesses}
@@ -86,24 +94,19 @@ class Card extends Component {
                             showSolved={game.state === gameStates.SOLVED}
                         />
                     )}
-                {game.creator &&
-                    game.creator._id === me &&
-                    game.state === gameStates.SOLVED && (
-                        <ViewSolve
-                            boardString={utils.getBoardStringForString(
-                                game.answer
-                            )}
-                            gameId={game._id}
-                            guesses={game.guesses}
-                            guessedLetters={game.guessedLetters}
-                            hint={game.hint}
-                            solver={
-                                game.solver
-                                    ? game.solver.displayName
-                                    : 'Sparky Bot'
-                            }
-                        ></ViewSolve>
-                    )}
+                {creatorId === myId && game.state === gameStates.SOLVED && (
+                    <ViewSolve
+                        boardString={utils.getBoardStringForString(game.answer)}
+                        gameId={game._id}
+                        guesses={game.guesses}
+                        guessedLetters={game.guessedLetters}
+                        hint={game.hint}
+                        notifyServer={game.solver ? true : false}
+                        solver={
+                            game.solver ? game.solver.displayName : 'Sparky Bot'
+                        }
+                    ></ViewSolve>
+                )}
             </div>
         );
     }

@@ -1,8 +1,13 @@
 import React from 'react';
 import Joi from 'joi-browser';
 import { getFriends } from '../services/friendsService';
-import { addGame } from '../services/gamesService';
+import {
+    addGame,
+    addGameForBot,
+    addGameForBotAsGuest,
+} from '../services/gamesService';
 import Form from './common/form';
+import { getCurrentUser } from '../services/authService';
 
 const hints = [
     { value: 'I CANNOT BELIEVE THAT ...', _id: '1' },
@@ -44,19 +49,24 @@ class Create extends Form {
     };
 
     async componentDidMount() {
-        try {
-            const response = await getFriends();
+        const user = getCurrentUser();
+        const sparkyBot = {
+            _id: -1,
+            displayName: 'Sparky Bot',
+        };
+        if (user) {
+            try {
+                const response = await getFriends();
+                this.setState({
+                    friends: [...response.data, sparkyBot],
+                });
+            } catch (ex) {
+                console.log(ex);
+            }
+        } else {
             this.setState({
-                friends: [
-                    ...response.data,
-                    {
-                        _id: -1,
-                        displayName: 'Sparky Bot',
-                    },
-                ],
+                friends: [sparkyBot],
             });
-        } catch (ex) {
-            console.log(ex);
         }
     }
 
@@ -79,8 +89,15 @@ class Create extends Form {
             };
             if (solver === '-1') {
                 delete game.solverId;
+                const user = getCurrentUser();
+                if (user) {
+                    await addGameForBot(game);
+                } else {
+                    await addGameForBotAsGuest(game);
+                }
+            } else {
+                await addGame(game);
             }
-            await addGame(game);
             this.setState({
                 data: {
                     hint: undefined,
@@ -95,14 +112,23 @@ class Create extends Form {
                 elements[i].selectedIndex = 0;
             }
         } catch (error) {
-            this.setState({
-                error: error.message + ', ' + error.response.data,
-                message: '',
-            });
+            if (error.response && error.response.data) {
+                this.setState({
+                    error: error.response.data,
+                    message: '',
+                });
+            } else {
+                console.log(error);
+                this.setState({
+                    error: 'Error creating game',
+                    message: '',
+                });
+            }
         }
     };
 
     render() {
+        const user = getCurrentUser();
         return (
             <>
                 <div
@@ -125,11 +151,11 @@ class Create extends Form {
                         this.state.friends,
                         'displayName'
                     )}
-                    {this.state.friends.length <= 1 && (
+                    {!user && this.state.friends.length <= 1 && (
                         <div className="alert alert-success">
-                            For now, you can only send puzzles to Sparky Bot.
-                            Add some friends to be able to send puzzles to real
-                            people.
+                            Guests can only send puzzles to Sparky Bot.
+                            Registered users can send puzzles to friends as
+                            well.
                         </div>
                     )}
                     {this.renderButton('Create')}

@@ -4,8 +4,14 @@ import GameBody from './GameBody';
 import utils from '../common/utils';
 import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
-import { solvePuzzle, revealLetter } from '../services/gamesService';
+import {
+    solvePuzzle,
+    solvePuzzleGuest,
+    revealLetter,
+    toggleExpansion,
+} from '../services/gamesService';
 import Icon from './common/icon';
+import { getCurrentUser } from '../services/authService';
 
 /*
 GameSolve component
@@ -27,31 +33,21 @@ class GameSolve extends Component {
         error: '',
         expanded: this.props.expandedInitially,
         failed: false,
+        guessedLettersLength: 0, // every time a guess is made, this increments
         initialized: false,
         letters: [],
+        message: '',
         solved: this.props.showSolved,
     };
 
-    componentDidUpdate(prevProps) {
-        if (
-            prevProps.guessedLetters.length !== this.props.guessedLetters.length
-        ) {
-            this.updateState();
-        }
-    }
-
-    componentDidMount() {
-        this.updateState();
-    }
-
-    updateState() {
+    static updateState(tempProps, tempState) {
         const {
             boardString,
             expandedInitially,
             guesses,
             guessedLetters,
             showSolved,
-        } = this.props;
+        } = tempProps;
         const initialCells = utils.decompress(boardString);
         const initialCursorPositions = [];
         const initialLetters = [];
@@ -102,7 +98,7 @@ class GameSolve extends Component {
                 }
             }
         }
-        this.setState({
+        return {
             cells: initialCells,
             cellsStatic: utils.decompress(boardString),
             cursor:
@@ -114,15 +110,28 @@ class GameSolve extends Component {
             eliminatedLetters: initialEliminatedLetters,
             error: '',
             expanded: expandedInitially,
-            failed: this.state.failed,
+            failed: tempState.failed,
+            guessedLettersLength: guessedLetters.length,
             initialized: true,
             letters: initialLetters,
             solved: showSolved,
-        });
+        };
+    }
+
+    static getDerivedStateFromProps(tempProps, tempState) {
+        if (tempProps.guessedLetters.length > tempState.guessedLettersLength) {
+            return GameSolve.updateState(tempProps, tempState);
+        }
+        return null;
+    }
+
+    componentDidMount() {
+        this.setState(GameSolve.updateState(this.props, this.state));
     }
 
     setExpanded = (expanded) => {
         this.setState({ expanded });
+        toggleExpansion(this.props.gameId, expanded);
     };
 
     // This is called when the user clicks on one of the
@@ -134,30 +143,57 @@ class GameSolve extends Component {
     handleSubmit = async () => {
         const { letters } = this.state;
         const { gameId, onUpdateGame } = this.props;
-
-        try {
-            const response = await solvePuzzle({
-                guess: letters.join(''),
-                gameId,
-            });
-            if (response.data.state === 'SOLVED') {
-                this.setState({
-                    failed: false,
-                    solved: true,
-                    error: '',
+        const user = getCurrentUser();
+        if (user) {
+            try {
+                const response = await solvePuzzle({
+                    guess: letters.join(''),
+                    gameId,
                 });
-            } else if (response.data.state === 'SOLVING') {
+                if (response.data.state === 'SOLVED') {
+                    this.setState({
+                        failed: false,
+                        solved: true,
+                        error: '',
+                    });
+                } else if (response.data.state === 'SOLVING') {
+                    this.setState({
+                        failed: true,
+                        solved: false,
+                        error: '',
+                    });
+                }
+                onUpdateGame(response.data);
+            } catch (error) {
                 this.setState({
-                    failed: true,
-                    solved: false,
-                    error: '',
+                    error: error.message + ', ' + error.response.data,
                 });
             }
-            onUpdateGame(response.data);
-        } catch (error) {
-            this.setState({
-                error: error.message + ', ' + error.response.data,
-            });
+        } else {
+            const newGame = solvePuzzleGuest(
+                this.props.gameId,
+                letters.join('')
+            );
+            if (newGame) {
+                if (newGame.state === 'SOLVED') {
+                    this.setState({
+                        failed: false,
+                        solved: true,
+                        error: '',
+                    });
+                } else if (newGame.state === 'SOLVING') {
+                    this.setState({
+                        failed: true,
+                        solved: false,
+                        error: '',
+                    });
+                }
+                onUpdateGame(newGame);
+            } else {
+                this.setState({
+                    error: 'Unable to update game',
+                });
+            }
         }
     };
 
@@ -176,13 +212,8 @@ class GameSolve extends Component {
 
     // This is called when the user presses a key on the keyboard
     handlePress = ({ key }) => {
-        const {
-            cells,
-            cursor,
-            cursorPositions,
-            initialized,
-            letters,
-        } = this.state;
+        const { cells, cursor, cursorPositions, initialized, letters } =
+            this.state;
 
         // No unknown letters, so the keyboard should have no effect
         if (letters.length === 0) return;
@@ -254,12 +285,20 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        if (
-            window.confirm(
-                'Spend 5 coins to get a hint on the selected letter?'
-            )
-        ) {
-            this.handleReveal();
+        const user = getCurrentUser();
+        if (user) {
+            if (
+                window.confirm(
+                    'Spend 5 coins to get a hint on the selected letter?'
+                )
+            ) {
+                this.handleReveal();
+            }
+        } else {
+            this.setState({
+                message:
+                    'Registered users can spend 5 coins to reveal the selected letter',
+            });
         }
     }
 
@@ -275,6 +314,7 @@ class GameSolve extends Component {
             failed,
             letters,
             initialized,
+            message,
             solved,
         } = this.state;
         const { creator, hint } = this.props;
@@ -387,6 +427,14 @@ class GameSolve extends Component {
                         style={{ marginBottom: 0 }}
                     >
                         {error}
+                    </div>
+                )}
+                {message && (
+                    <div
+                        className="alert alert-success"
+                        style={{ marginBottom: 0 }}
+                    >
+                        {message}
                     </div>
                 )}
             </>

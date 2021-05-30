@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = process.env.REACT_APP_API_URL; //'https://rocky-gorge-77017.herokuapp.com/api';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 axios.interceptors.response.use(null, (error) => {
     const expectedError =
@@ -14,7 +14,9 @@ axios.interceptors.response.use(null, (error) => {
 });
 
 function setJwt(jwt) {
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;
+    if (jwt) {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;
+    }
 }
 
 function unsetAuthHeader() {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
-import { getGames } from '../services/gamesService';
+import { getGames, getGamesGuest } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
 import { getCoins, collectCoins } from '../services/coinsService';
 import Card from './Card';
@@ -20,24 +20,29 @@ class Games extends Component {
 
     async componentDidMount() {
         try {
-            const response = await getGames();
-            const response2 = await getCoins();
+            const gamesResponseData = this.props.user
+                ? (await getGames()).data
+                : await getGamesGuest();
+            const coinsResponse = this.props.user
+                ? await getCoins()
+                : { data: { coins: 0, nextCollect: null } };
             this.setState({
-                games: this.sortGames([...response.data]),
+                games: this.sortGames([...gamesResponseData]),
                 error: '',
-                coins: response2.data.coins,
-                nextCollect: response2.data.nextCollect,
+                coins: coinsResponse.data.coins,
+                nextCollect: coinsResponse.data.nextCollect,
                 canCollect:
-                    new Date() > new Date(response2.data.nextCollect)
+                    coinsResponse.data.nextCollect &&
+                    new Date() > new Date(coinsResponse.data.nextCollect)
                         ? true
                         : false,
             });
         } catch (ex) {
             console.log(ex);
-            if (ex.response) {
+            if (ex.response && ex.response.data) {
                 this.setState({
                     games: [],
-                    error: ex.response.data,
+                    error: `Error fetching games: ${ex.response.data}`,
                 });
             } else {
                 this.setState({
@@ -64,21 +69,15 @@ class Games extends Component {
 
     sortGames = (unsortedGames) => {
         const newGames = [...unsortedGames];
-        const me = getCurrentUser()._id;
+
+        const user = getCurrentUser();
+        const myId = (user && user._id) || '';
         const getFirstTieBreaker = (game) => {
-            if (game.solver && game.state === gameStates.SOLVED) return 0;
-            if (
-                game.solver &&
-                game.state === gameStates.SOLVING &&
-                game.solver._id === me
-            )
+            const solverId = (game.solver && game.solver._id) || '';
+            if (game.state === gameStates.SOLVED) return 0;
+            if (game.state === gameStates.SOLVING && solverId === myId)
                 return 1;
-            if (
-                game.solver &&
-                game.state === gameStates.NEW &&
-                game.solver._id === me
-            )
-                return 2;
+            if (game.state === gameStates.NEW && solverId === myId) return 2;
             if (game.solver) return 3;
             return 4;
         };
@@ -89,7 +88,6 @@ class Games extends Component {
             // 1 - Continue solving (SOLVING)
             // 2 - Start solving new puzzles (NEW)
             // 3 - Show puzzles we created that are waiting to be solved
-            // 4 - Public puzzles
             // Within each group, sort by creation time, earliest first for 0-3,
             // most recent first for 4
             const scoreA = getFirstTieBreaker(a);
@@ -173,7 +171,8 @@ class Games extends Component {
                         if (this.state.canCollect) {
                             this.handleCoinPress();
                         } else {
-                            let message = 'Bonus coin every day';
+                            let message =
+                                'Registered users can collect coins every day';
                             if (this.state.nextCollect) {
                                 const secondsToWait = Math.floor(
                                     (new Date(this.state.nextCollect) -

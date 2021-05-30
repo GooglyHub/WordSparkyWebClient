@@ -25,14 +25,11 @@ function App() {
                     <Route path="/login" component={LoginForm}></Route>
                     <Route path="/logout" component={Logout}></Route>
                     <Route path="/register" component={Register}></Route>
-                    <ProtectedRoute
+                    <Route
                         path="/home"
-                        component={Games}
-                    ></ProtectedRoute>
-                    <ProtectedRoute
-                        path="/create"
-                        component={Create}
-                    ></ProtectedRoute>
+                        render={() => <Games user={currUser}></Games>}
+                    ></Route>
+                    <Route path="/create" component={Create}></Route>
                     <ProtectedRoute
                         path="/leaderboard"
                         component={Leaderboard}
@@ -41,10 +38,11 @@ function App() {
                         path="/account"
                         render={() => <Account user={currUser}></Account>}
                     ></ProtectedRoute>
-                    <ProtectedAdminRoute
+                    <Route /*ProtectedAdminRoute*/
                         path="/bots"
                         component={Bots}
-                    ></ProtectedAdminRoute>
+                    ></Route>
+                    //ProtectedAdminRoute
                     <Route path="/not-found" component={NotFound}></Route>
                     <Redirect from="/" exact to="/home"></Redirect>
                     <Redirect to="/not-found"></Redirect>

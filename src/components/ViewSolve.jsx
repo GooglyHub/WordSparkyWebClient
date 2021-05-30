@@ -144,9 +144,8 @@ class ViewSolve extends Component {
                             newCells.push([...currentCells[ii]]);
                         }
                         newCells[i][j].state = 'guess';
-                        newCells[i][j].key = this.props.guessedLetters[k][
-                            pos++
-                        ];
+                        newCells[i][j].key =
+                            this.props.guessedLetters[k][pos++];
                         this.setState({ cells: newCells });
                         currentCells = newCells;
                         if (this.cancel) {
@@ -226,8 +225,10 @@ class ViewSolve extends Component {
                     title={`View ${this.props.solver}'s attempt to solve`}
                     onClick={async () => {
                         if (!this.state.expanded) {
-                            // notify server that the solve has been viewed
-                            viewSolve({ gameId: this.props.gameId }); // does not need to await
+                            if (this.props.notifyServer) {
+                                // notify server that the solve has been viewed
+                                viewSolve({ gameId: this.props.gameId }); // does not need to await
+                            }
                             this.startAnimation();
                             this.setState({ expanded: true });
                         } else {
