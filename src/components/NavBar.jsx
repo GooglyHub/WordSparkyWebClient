@@ -60,7 +60,7 @@ const NavBar = ({ user }) => {
                     </li>
                 )}
                 {
-                    /*user && user.isAdmin &&*/ <li>
+                    user && user.isAdmin && <li>
                         <NavLink className="nav-item nav-link" to="/bots">
                             Bots
                         </NavLink>

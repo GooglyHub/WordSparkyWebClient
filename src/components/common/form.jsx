@@ -60,7 +60,7 @@ class Form extends Component {
         );
     }
 
-    renderInput(name, label, type = 'text') {
+    renderInput(name, label, type = 'text', readOnly = false) {
         const { data, errors } = this.state;
         return (
             <Input
@@ -68,13 +68,14 @@ class Form extends Component {
                 value={data[name]}
                 label={label}
                 type={type}
+                readOnly={readOnly}
                 error={errors[name]}
                 onChange={this.handleChange}
             ></Input>
         );
     }
 
-    renderSelect(name, label, options, nameField) {
+    renderSelect(name, label, options, nameField, includeBlank = true) {
         const { data, errors } = this.state;
         return (
             <Select
@@ -84,6 +85,7 @@ class Form extends Component {
                 options={options}
                 nameField={nameField}
                 error={errors[name]}
+                includeBlank={includeBlank}
                 onChange={this.handleChange}
             />
         );

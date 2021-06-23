@@ -7,6 +7,7 @@ import Logout from './Logout';
 import Profile from './Profile';
 import BotSubscriptions from './BotSubscriptions';
 import Friends from './Friends';
+import ChangePassword from './ChangePassword';
 
 class Account extends Component {
     render() {
@@ -34,6 +35,14 @@ class Account extends Component {
                             path="/account/friends"
                             render={() => (
                                 <Friends user={this.props.user}></Friends>
+                            )}
+                        ></ProtectedRoute>
+                        <ProtectedRoute
+                            path="/account/changepassword"
+                            render={() => (
+                                <ChangePassword
+                                    user={this.props.user}
+                                ></ChangePassword>
                             )}
                         ></ProtectedRoute>
                         <Route path="/not-found" component={NotFound}></Route>

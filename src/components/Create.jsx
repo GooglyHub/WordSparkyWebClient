@@ -29,9 +29,9 @@ class Create extends Form {
         friends: [],
         coins: 0,
         data: {
-            hint: '',
+            hint: '1',
             answer: '',
-            solver: '',
+            solver: getCurrentUser() ? '' : '-1',
         },
         errors: {},
         error: '',
@@ -100,9 +100,9 @@ class Create extends Form {
             }
             this.setState({
                 data: {
-                    hint: undefined,
+                    hint: '1',
                     answer: '',
-                    solver: undefined,
+                    solver: getCurrentUser() ? '' : '-1',
                 },
                 error: '',
                 message: 'Puzzle has been created',
@@ -143,13 +143,14 @@ class Create extends Form {
                     Create a Puzzle
                 </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
-                    {this.renderSelect('hint', 'Hint', hints, 'value')}
+                    {this.renderSelect('hint', 'Hint', hints, 'value', false)}
                     {this.renderInput('answer', 'Answer')}
                     {this.renderSelect(
                         'solver',
                         'Send to',
                         this.state.friends,
-                        'displayName'
+                        'displayName',
+                        user ? true : false
                     )}
                     {!user && this.state.friends.length <= 1 && (
                         <div className="alert alert-success">

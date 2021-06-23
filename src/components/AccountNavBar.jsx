@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const AccountNavBar = () => {
     return (
-        <nav className="navbar navbar-light">
+        <nav className="navbar navbar-light" style={{ marginLeft: 150 }}>
             <ul className="nav nav-pills">
                 <>
                     <li>
@@ -28,6 +28,14 @@ const AccountNavBar = () => {
                             to="/account/bots"
                         >
                             Puzzle Bots
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            className="nav-item nav-link"
+                            to="/account/changepassword"
+                        >
+                            Change Password
                         </NavLink>
                     </li>
                 </>

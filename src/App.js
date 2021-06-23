@@ -38,11 +38,10 @@ function App() {
                         path="/account"
                         render={() => <Account user={currUser}></Account>}
                     ></ProtectedRoute>
-                    <Route /*ProtectedAdminRoute*/
+                    <ProtectedAdminRoute
                         path="/bots"
                         component={Bots}
-                    ></Route>
-                    //ProtectedAdminRoute
+                    ></ProtectedAdminRoute>
                     <Route path="/not-found" component={NotFound}></Route>
                     <Redirect from="/" exact to="/home"></Redirect>
                     <Redirect to="/not-found"></Redirect>

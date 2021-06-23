@@ -27,11 +27,7 @@ class Profile extends Form {
     doSubmit = async () => {
         try {
             const { displayName, icon, color } = this.state.data;
-            if (displayName.trim().length === 0) {
-                return;
-            }
             const response = await updateProfile({
-                displayName,
                 icon,
                 color,
             });
@@ -75,7 +71,7 @@ class Profile extends Form {
                     Update Profile
                 </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
-                    {this.renderInput('displayName', 'Name')}
+                    {this.renderInput('displayName', 'Name', 'text', true)}
                     {this.renderSelect('icon', 'Icon', icons, 'label')}
                     {this.renderSelect('color', 'Color', colors, 'color')}
 
@@ -87,17 +83,6 @@ class Profile extends Form {
                             size={40}
                             margin={20}
                         ></Icon>
-                        <div
-                            style={{
-                                fontSize: 20,
-                                marginLeft: 10,
-                                color: colors.dark,
-                                alignSelf: 'center',
-                                marginRight: 20,
-                            }}
-                        >
-                            {this.state.data.displayName}
-                        </div>
                     </div>
                     {this.renderButton('Update')}
                 </form>

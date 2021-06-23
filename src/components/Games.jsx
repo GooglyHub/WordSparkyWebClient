@@ -71,25 +71,35 @@ class Games extends Component {
         const newGames = [...unsortedGames];
 
         const user = getCurrentUser();
-        const myId = (user && user._id) || '';
+        const myId = (user && user._id) || '-1';
         const getFirstTieBreaker = (game) => {
             const solverId = (game.solver && game.solver._id) || '';
-            if (game.state === gameStates.SOLVED) return 0;
-            if (game.state === gameStates.SOLVING && solverId === myId)
+            if (game.state === gameStates.SOLVED && solverId !== myId) {
+                return 0;
+            }
+            if (game.state === gameStates.SOLVED && solverId === myId) {
                 return 1;
-            if (game.state === gameStates.NEW && solverId === myId) return 2;
-            if (game.solver) return 3;
-            return 4;
+            }
+            if (game.state === gameStates.SOLVING && solverId === myId) {
+                return 2;
+            }
+            if (game.state === gameStates.NEW && solverId === myId) {
+                return 3;
+            }
+            if (game.solver) {
+                return 4;
+            }
+            return 5;
         };
 
         newGames.sort((a, b) => {
             // The order of games to present to the user is:
             // 0 - View solves (SOLVED)
-            // 1 - Continue solving (SOLVING)
-            // 2 - Start solving new puzzles (NEW)
-            // 3 - Show puzzles we created that are waiting to be solved
-            // Within each group, sort by creation time, earliest first for 0-3,
-            // most recent first for 4
+            // 1 - We solved a puzzle (SOLVED)
+            // 2 - Continue solving (SOLVING)
+            // 3 - Start solving new puzzles (NEW)
+            // 4 - Show puzzles we created that are waiting to be solved
+            // Within each group, sort by creation time
             const scoreA = getFirstTieBreaker(a);
             const scoreB = getFirstTieBreaker(b);
             if (scoreA < scoreB) return -1;
@@ -98,13 +108,8 @@ class Games extends Component {
             const dateA = new Date(a.createTime).getTime();
             const dateB = new Date(b.createTime).getTime();
 
-            if (scoreA !== 4) {
-                if (dateA < dateB) return -1;
-                if (dateA > dateB) return 1;
-            } else {
-                if (dateA < dateB) return 1;
-                if (dateA > dateB) return -1;
-            }
+            if (dateA < dateB) return -1;
+            if (dateA > dateB) return 1;
             return 0;
         });
         return newGames;
@@ -170,6 +175,7 @@ class Games extends Component {
                     onClick={() => {
                         if (this.state.canCollect) {
                             this.handleCoinPress();
+                            this.setState({ message: 'Collected free coin!' });
                         } else {
                             let message =
                                 'Registered users can collect coins every day';
@@ -180,11 +186,11 @@ class Games extends Component {
                                         1000
                                 );
                                 if (secondsToWait > 0) {
-                                    message = `Bonus coin available ${this.formatTime(
+                                    message = `Free coin will be available ${this.formatTime(
                                         secondsToWait
                                     )}`;
                                 } else {
-                                    message = 'Bonus coin is available';
+                                    message = 'Free coin is available';
                                     this.setState({ canCollect: true });
                                 }
                             }
@@ -234,6 +240,11 @@ class Games extends Component {
                         />
                     );
                 })}
+                {/* {this.state.games.length === 0 && (
+                    <div className="alert alert-warning alert-dismissable">
+                        You have no active games!
+                    </div>
+                )} */}
             </>
         );
     }

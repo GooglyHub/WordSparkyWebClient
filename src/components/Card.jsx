@@ -12,7 +12,7 @@ class Card extends Component {
     render() {
         const { game, activeGameId, onUpdateGame, setCoins } = this.props;
         const user = getCurrentUser();
-        const myId = (user && user._id) || '';
+        const myId = (user && user._id) || '-1';
         const solverId = (game.solver && game.solver._id) || '';
         const creatorId = (game.creator && game.creator._id) || '';
 
@@ -31,8 +31,7 @@ class Card extends Component {
                     flexDirection: 'column',
                 }}
             >
-                {game.solver &&
-                    solverId !== myId &&
+                {solverId !== myId &&
                     game.creator &&
                     creatorId === myId &&
                     game.state !== gameStates.SOLVED && (
@@ -41,33 +40,33 @@ class Card extends Component {
                                 game.answer || ''
                             )}
                             hint={game.hint}
-                            solver={game.solver.displayName}
+                            solver={
+                                (game.solver && game.solver.displayName) ||
+                                'Sparky Bot'
+                            }
                         />
                     )}
-                {game.solver &&
-                    solverId === myId &&
-                    game.state === gameStates.NEW && (
-                        <GuessLetters
-                            answer={game.answer}
-                            boardString={utils.getBoardString(game)}
-                            createTime={game.createTime}
-                            creator={
-                                game.creator
-                                    ? game.creator.displayName
-                                    : game.creatorBot
-                                    ? game.creatorBot.name
-                                    : ''
-                            }
-                            expandedInitially={
-                                game._id === activeGameId || game.active
-                            }
-                            gameId={game._id}
-                            hint={game.hint}
-                            onUpdateGame={onUpdateGame}
-                        />
-                    )}
-                {game.solver &&
-                    solverId === myId &&
+                {solverId === myId && game.state === gameStates.NEW && (
+                    <GuessLetters
+                        answer={game.answer}
+                        boardString={utils.getBoardString(game)}
+                        createTime={game.createTime}
+                        creator={
+                            game.creator
+                                ? game.creator.displayName
+                                : game.creatorBot
+                                ? game.creatorBot.name
+                                : ''
+                        }
+                        expandedInitially={
+                            game._id === activeGameId || game.active
+                        }
+                        gameId={game._id}
+                        hint={game.hint}
+                        onUpdateGame={onUpdateGame}
+                    />
+                )}
+                {solverId === myId &&
                     (game.state === gameStates.SOLVING ||
                         game.state === gameStates.SOLVED) && (
                         <GameSolve
@@ -101,9 +100,10 @@ class Card extends Component {
                         guesses={game.guesses}
                         guessedLetters={game.guessedLetters}
                         hint={game.hint}
-                        notifyServer={game.solver ? true : false}
+                        notifyServer={game._id ? true : false}
                         solver={
-                            game.solver ? game.solver.displayName : 'Sparky Bot'
+                            (game.solver && game.solver.displayName) ||
+                            'Sparky Bot'
                         }
                     ></ViewSolve>
                 )}

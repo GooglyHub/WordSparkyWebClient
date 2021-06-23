@@ -7,31 +7,30 @@ import { login, getCurrentUser } from '../services/authService';
 class LoginForm extends Form {
     state = {
         data: {
-            email: '',
+            displayName: '',
             password: '',
         },
         errors: {},
+        error: null,
     };
 
     schema = {
-        email: Joi.string().required().email().label('Email'),
+        displayName: Joi.string().required().label('Display name'),
         password: Joi.string().required().label('Password'),
     };
 
     doSubmit = async () => {
         try {
-            const { email, password } = this.state.data;
-            await login(email, password);
+            const { displayName, password } = this.state.data;
+            await login(displayName, password);
             const { state } = this.props.location;
             window.location = state ? state.from.pathname : '/';
         } catch (ex) {
-            const errors = { ...this.state.errors };
-            if (ex.response) {
-                errors.password = ex.response.data;
-            } else {
-                errors.password = 'Error logging in';
+            let msg = 'Error logging in';
+            if (ex.response && ex.response.data) {
+                msg = ex.response.data;
             }
-            this.setState({ errors });
+            this.setState({ error: msg });
         }
     };
 
@@ -40,18 +39,23 @@ class LoginForm extends Form {
             return <Redirect to="/"></Redirect>;
         }
         return (
-            <div
-                style={{
-                    width: 300,
-                    padding: 10,
-                }}
-            >
-                <form onSubmit={this.handleSubmit}>
-                    {this.renderInput('email', 'Email')}
-                    {this.renderInput('password', 'Password', 'password')}
-                    {this.renderButton('Login')}
-                </form>
-            </div>
+            <>
+                <div
+                    style={{
+                        width: 300,
+                        padding: 10,
+                    }}
+                >
+                    <form onSubmit={this.handleSubmit}>
+                        {this.renderInput('displayName', 'Display name')}
+                        {this.renderInput('password', 'Password', 'password')}
+                        {this.renderButton('Login')}
+                    </form>
+                </div>
+                {this.state.error && (
+                    <div className="alert alert-danger">{this.state.error}</div>
+                )}
+            </>
         );
     }
 }

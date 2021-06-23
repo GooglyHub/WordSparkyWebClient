@@ -7,56 +7,63 @@ import { loginWithToken } from '../services/authService';
 class Register extends Form {
     state = {
         data: {
-            email: '',
-            password: '',
             displayName: '',
+            password: '',
         },
         errors: {},
+        error: null,
     };
 
     schema = {
-        email: Joi.string().required().email().min(1).max(256).label('Email'),
-        password: Joi.string().required().min(1).max(256).label('Password'),
         displayName: Joi.string()
             .required()
             .min(3)
             .max(16)
+            .regex(/^[A-Za-z0-9]+$/, 'letters and digits only')
             .label('Display name'),
+        password: Joi.string().required().min(1).max(256).label('Password'),
     };
 
     doSubmit = async () => {
         try {
-            const { email, password, displayName } = this.state.data;
-            const response = await register({ email, password, displayName });
+            const { displayName, password } = this.state.data;
+            const response = await register({ displayName, password });
             const authToken = response.data;
             loginWithToken(authToken);
             window.location = '/';
         } catch (ex) {
-            const errors = { ...this.state.errors };
-            if (ex.response) {
-                errors.password = ex.response.data;
-            } else {
-                errors.password = 'Error registering';
+            let msg = 'Error registering';
+            if (ex.response && ex.response.data) {
+                msg = ex.response.data;
             }
-            this.setState({ errors });
+            this.setState({ error: msg });
         }
     };
 
     render() {
         return (
-            <div
-                style={{
-                    width: 300,
-                    padding: 10,
-                }}
-            >
-                <form onSubmit={this.handleSubmit}>
-                    {this.renderInput('email', 'Email')}
-                    {this.renderInput('password', 'Password', 'password')}
-                    {this.renderInput('displayName', 'Display name')}
-                    {this.renderButton('Register')}
-                </form>
-            </div>
+            <>
+                <div
+                    style={{
+                        width: 400,
+                        padding: 10,
+                    }}
+                >
+                    <div className="alert alert-success">
+                        Display name is the name that other users see you as. It
+                        must be between 3 and 16 letters or digits. <br />
+                        Word Sparky is also available as an Android app.
+                    </div>
+                    <form onSubmit={this.handleSubmit}>
+                        {this.renderInput('displayName', 'Display name')}
+                        {this.renderInput('password', 'Password', 'password')}
+                        {this.renderButton('Register')}
+                    </form>
+                </div>
+                {this.state.error && (
+                    <div className="alert alert-danger">{this.state.error}</div>
+                )}
+            </>
         );
     }
 }

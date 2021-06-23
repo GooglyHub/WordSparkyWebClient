@@ -133,7 +133,7 @@ class Friends extends Form {
                     </div>
                 )}
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
-                    {this.renderInput('friendSearch', 'Search for user')}
+                    {this.renderInput('friendSearch', 'Search for user to add')}
                     {this.renderButton('Add Friend')}
                 </form>
                 {this.state.friends.length > 0 && (

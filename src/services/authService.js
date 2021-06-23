@@ -4,8 +4,8 @@ import jwtDecode from 'jwt-decode';
 const apiEndpoint = '/auth';
 const tokenKey = 'token';
 
-const login = async (email, password) => {
-    const response = await http.post(apiEndpoint, { email, password });
+const login = async (displayName, password) => {
+    const response = await http.post(apiEndpoint, { displayName, password });
     const authToken = response.data;
     localStorage.setItem(tokenKey, authToken);
 };
