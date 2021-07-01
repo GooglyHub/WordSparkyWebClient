@@ -186,7 +186,7 @@ class Games extends Component {
                                         1000
                                 );
                                 if (secondsToWait > 0) {
-                                    message = `Free coin will be available ${this.formatTime(
+                                    message = `Coins will be available ${this.formatTime(
                                         secondsToWait
                                     )}`;
                                 } else {

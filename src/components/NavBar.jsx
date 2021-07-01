@@ -59,6 +59,11 @@ const NavBar = ({ user }) => {
                         </NavLink>
                     </li>
                 )}
+                <li>
+                    <NavLink className="nav-item nav-link" to="/help">
+                        Help
+                    </NavLink>
+                </li>
                 {
                     user && user.isAdmin && <li>
                         <NavLink className="nav-item nav-link" to="/bots">

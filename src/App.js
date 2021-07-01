@@ -8,6 +8,7 @@ import Games from './components/Games';
 import Create from './components/Create';
 import Leaderboard from './components/Leaderboard';
 import Account from './components/Account';
+import Help from './components/Help';
 import { getCurrentUser } from './services/authService';
 import ProtectedRoute from './components/common/protectedRoute';
 import ProtectedAdminRoute from './components/common/protectedAdminRoute';
@@ -38,6 +39,7 @@ function App() {
                         path="/account"
                         render={() => <Account user={currUser}></Account>}
                     ></ProtectedRoute>
+                    <Route path="/help" component={Help}></Route>
                     <ProtectedAdminRoute
                         path="/bots"
                         component={Bots}
