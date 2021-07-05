@@ -1,6 +1,8 @@
 const colors = {
-    alertSuccessBg: '#d4edda',
-    alertSuccess: '#155724',
+    // alertSuccessBg: '#d4edda',
+    // alertSuccess: '#155724',
+    alertSuccessBg: '#fce7b2',
+    alertSuccess: '#856404',
     alertWarningBg: '#fce7b2',
     alertWarning: '#856404',
     black: '#201335',

@@ -71,7 +71,7 @@ class ChangePassword extends Form {
                     <div className="alert alert-danger">{this.state.error}</div>
                 )}
                 {this.state.message && (
-                    <div className="alert alert-success">
+                    <div className="alert alert-warning">
                         {this.state.message}
                     </div>
                 )}

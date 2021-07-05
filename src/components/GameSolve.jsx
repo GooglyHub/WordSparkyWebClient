@@ -431,7 +431,7 @@ class GameSolve extends Component {
                 )}
                 {message && (
                     <div
-                        className="alert alert-success"
+                        className="alert alert-warning"
                         style={{ marginBottom: 0 }}
                     >
                         {message}

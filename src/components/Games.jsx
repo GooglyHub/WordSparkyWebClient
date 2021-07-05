@@ -223,7 +223,7 @@ class Games extends Component {
                     <div className="alert alert-danger">{this.state.error}</div>
                 )}
                 {this.state.message && (
-                    <div className="alert alert-success alert-dismissable">
+                    <div className="alert alert-warning alert-dismissable">
                         {this.state.message}
                     </div>
                 )}

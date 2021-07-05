@@ -107,9 +107,8 @@ class Bots extends Form {
 
     handleCopyHeadline = (botIdx, headlineIdx) => {
         const newData = { ...this.state.data };
-        newData[`answer${botIdx}`] = this.state.suggestions[botIdx][
-            headlineIdx
-        ];
+        newData[`answer${botIdx}`] =
+            this.state.suggestions[botIdx][headlineIdx];
         this.setState({ data: newData });
     };
 
@@ -144,7 +143,7 @@ class Bots extends Form {
                         </div>
                     )}
                     {this.state.message && (
-                        <div className="alert alert-success">
+                        <div className="alert alert-warning">
                             {this.state.message}
                         </div>
                     )}

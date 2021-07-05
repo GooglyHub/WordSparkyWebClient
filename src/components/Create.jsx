@@ -153,8 +153,8 @@ class Create extends Form {
                         user ? true : false
                     )}
                     {!user && this.state.friends.length <= 1 && (
-                        <div className="alert alert-success">
-                            Guests can only send puzzles to Sparky Bot.
+                        <div className="alert alert-warning">
+                            Tip: Guests can only send puzzles to Sparky Bot.
                             Registered users can send puzzles to friends as
                             well.
                         </div>
@@ -166,7 +166,7 @@ class Create extends Form {
                     <div className="alert alert-danger">{this.state.error}</div>
                 )}
                 {this.state.message && (
-                    <div className="alert alert-success">
+                    <div className="alert alert-warning">
                         {this.state.message}
                     </div>
                 )}

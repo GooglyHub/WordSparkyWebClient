@@ -49,7 +49,7 @@ class Register extends Form {
                         padding: 10,
                     }}
                 >
-                    <div className="alert alert-success">
+                    <div className="alert alert-warning">
                         Display name is the name that other users see you as. It
                         must be between 3 and 16 letters or digits. <br />
                         Word Sparky is also available as an Android app.
