@@ -23,81 +23,36 @@ const updateBotPuzzle = (data) => {
     return http.post(apiEndpoint, data);
 };
 
-const getPastDayRange = () => {
-    const now = new Date();
-    const fortyEightHoursAgo = new Date(now - 48 * 60 * 60 * 1000);
-    return (
-        fortyEightHoursAgo.toISOString().split('T')[0] +
-        ',' +
-        now.toISOString().split('T')[0]
-    );
-};
-
 const getHeadlines = async (categories) => {
-    const cfg = {
-        params: {
-            access_key: process.env.REACT_APP_NEWS_KEY,
-            countries: 'us',
-            categories: categories.join(','),
-            sort: 'popularity',
-            limit: '100',
-            date: getPastDayRange(),
-            sources: 'cnn,nytimes,espn,bbc,time,foxnews,yahoo',
-        },
-    };
-    const oldHeader = http.unsetAuthHeader();
-    const response = await axios.get('http://api.mediastack.com/v1/news', cfg);
-    http.setAuthHeader(oldHeader);
-
     const headlines = [];
     for (let i = 0; i < categories.length; i++) {
         headlines.push([]);
-    }
-    if (response.status === 200) {
-        for (const headline of response.data.data) {
-            for (let i = 0; i < categories.length; i++) {
-                if (headline.category === categories[i]) {
-                    headlines[i].push(headline.title);
-                    break;
-                }
-            }
-        }
-    }
-
-    // Find any categories that got left behind
-    let prevCategoriesLength = 1 + categories.length;
-    delete cfg.params.sources; // accept any sources
-    for (let iters = 0; iters < categories.length; iters++) {
-        const lowCats = [];
-        for (let i = 0; i < categories.length; i++) {
-            if (headlines[i].length < 5) {
-                lowCats.push(categories[i]);
-            }
-        }
-        if (lowCats.length === 0) {
-            break;
-        }
-        if (lowCats.length === prevCategoriesLength) {
-            break;
-        }
-        prevCategoriesLength = lowCats.length;
-
+        const cfg = {
+            params: {
+                apiKey: process.env.REACT_APP_NEWS_KEY,
+                country: 'us',
+                category: categories[i],
+                pageSize: 100,
+                page: 1,
+            },
+        };
         const oldHeader = http.unsetAuthHeader();
-        cfg.params.categories = lowCats.join(',');
         const response = await axios.get(
-            'http://api.mediastack.com/v1/news',
+            'https://newsapi.org/v2/top-headlines',
             cfg
         );
         http.setAuthHeader(oldHeader);
-
         if (response.status === 200) {
-            for (const headline of response.data.data) {
-                for (let i = 0; i < categories.length; i++) {
-                    if (headline.category === categories[i]) {
-                        headlines[i].push(headline.title);
-                        break;
-                    }
+            if (response.data.status === 'ok') {
+                for (const headline of response.data.articles) {
+                    headlines[i].push(headline.title);
                 }
+            } else {
+                console.log(
+                    'Eror getting headlines',
+                    response.data.code,
+                    response.data.message
+                );
             }
         }
     }
