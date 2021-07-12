@@ -5,15 +5,15 @@ class Privacy extends Component {
         return (
             <>
                 <h1>Privacy Policy</h1>
-                <p>Last updated: July 4, 2021</p>
+                <p>Last updated: July 11, 2021</p>
                 <p>
                     GooglyPower Software does not collect any personal data.
                     Users can play the game without disclosing who they are.
                 </p>
                 <p>
-                    However, as a precaution, users are advised not to create
-                    puzzles that have any personal data. Puzzles are stored on
-                    the servers up to two weeks after they are solved.
+                    As a precaution, users are advised not to create puzzles
+                    that have private information, because puzzles are stored on
+                    the servers.
                 </p>
                 <h1>Contact Us</h1>
                 <p>

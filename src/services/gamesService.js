@@ -116,6 +116,10 @@ const viewSolve = (game) => {
     return http.post(apiEndpoint + '/view', game);
 };
 
+const deleteGame = (game) => {
+    return http.post(apiEndpoint + '/del', game);
+};
+
 const revealLetter = (data) => {
     return http.get(apiEndpoint + '/reveal', { params: data });
 };
@@ -139,6 +143,7 @@ export {
     solvePuzzle,
     solvePuzzleGuest,
     viewSolve,
+    deleteGame,
     revealLetter,
     toggleExpansion,
 };

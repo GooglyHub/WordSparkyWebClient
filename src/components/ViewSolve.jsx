@@ -235,6 +235,12 @@ class ViewSolve extends Component {
                             this.setState({ expanded: false });
                         }
                     }}
+                    onDelete={() => {
+                        if (this.props.notifyServer) {
+                            viewSolve({ gameId: this.props.gameId });
+                        }
+                        this.props.onRemoveGame(this.props.gameId);
+                    }}
                 ></CardHeader>
                 {!this.state.expanded && (
                     <GameBody

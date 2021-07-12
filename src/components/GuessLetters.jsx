@@ -9,6 +9,7 @@ import {
     toggleExpansion,
 } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
+import { deleteGame } from '../services/gamesService';
 
 class GuessLetters extends Component {
     state = {
@@ -62,15 +63,23 @@ class GuessLetters extends Component {
             <>
                 <CardHeader
                     onClick={() => {
-                        this.setExpanded(!this.state.expanded);
+                        //this.setExpanded(!this.state.expanded);
+                        this.setExpanded(true);
                     }}
                     title={`${creator} sent a puzzle (${utils.getAgeString(
                         createTime
                     )})`}
+                    onDelete={() => {
+                        deleteGame({ gameId: this.props.gameId });
+                        this.props.onRemoveGame(this.props.gameId);
+                    }}
                 />
                 <GameBody
                     hint={hint}
                     board={utils.decompress(boardString)}
+                    onClick={() => {
+                        this.setExpanded(true);
+                    }}
                 ></GameBody>
                 {this.state.expanded && (
                     <LettersInput

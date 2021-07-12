@@ -115,6 +115,13 @@ class Games extends Component {
         return newGames;
     };
 
+    removeGame(gameId) {
+        const newGames = this.state.games.filter((g) => g._id != gameId);
+        this.setState({
+            games: newGames,
+        });
+    }
+
     sleep = (ms) => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     };
@@ -234,6 +241,9 @@ class Games extends Component {
                             game={game}
                             onUpdateGame={(newGame) => {
                                 this.updateGame(game._id, newGame);
+                            }}
+                            onRemoveGame={(gameId) => {
+                                this.removeGame(gameId);
                             }}
                             setCoins={this.setCoins}
                             activeGameId={this.state.activeGameId}

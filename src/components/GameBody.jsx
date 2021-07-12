@@ -10,6 +10,7 @@ function GameBody({
     cursor,
     onPress = (ch) => {},
     onKeyPress = (key) => {},
+    onClick,
 }) {
     return (
         <div
@@ -32,6 +33,7 @@ function GameBody({
                     onKeyPress(key);
                 }
             }}
+            onClick={onClick}
         >
             <div
                 style={{

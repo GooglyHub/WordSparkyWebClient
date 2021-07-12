@@ -12,6 +12,7 @@ import {
 } from '../services/gamesService';
 import Icon from './common/icon';
 import { getCurrentUser } from '../services/authService';
+import { deleteGame } from '../services/gamesService';
 
 /*
 GameSolve component
@@ -322,9 +323,18 @@ class GameSolve extends Component {
             <>
                 <CardHeader
                     onClick={() => {
-                        this.setExpanded(!this.state.expanded);
+                        //this.setExpanded(!this.state.expanded);
+                        this.setExpanded(true);
                     }}
                     title={`Solve ${creator}'s puzzle`}
+                    onDelete={() => {
+                        if (!solved) {
+                            // If it's solved, don't remove from the server
+                            // so the puzzle creator can view the solve
+                            deleteGame({ gameId: this.props.gameId });
+                        }
+                        this.props.onRemoveGame(this.props.gameId);
+                    }}
                 ></CardHeader>
                 {expanded && solved && (
                     <span
@@ -349,7 +359,13 @@ class GameSolve extends Component {
                     </span>
                 )}
                 {!expanded && (
-                    <GameBody hint={hint} board={cellsStatic}></GameBody>
+                    <GameBody
+                        hint={hint}
+                        board={cellsStatic}
+                        onClick={() => {
+                            this.setExpanded(true);
+                        }}
+                    ></GameBody>
                 )}
                 {expanded && (
                     <GameBody
@@ -394,13 +410,7 @@ class GameSolve extends Component {
                                     marginRight={5}
                                 ></Icon>
                             </div>
-                            <div
-                                style={{
-                                    borderWidth: 2,
-                                    borderColor: colors.primary,
-                                    borderStyle: 'solid',
-                                }}
-                            >
+                            <div>
                                 <button
                                     className="btn btn-primary"
                                     onClick={this.handleSubmit}

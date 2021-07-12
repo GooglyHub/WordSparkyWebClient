@@ -10,7 +10,8 @@ import ViewSolve from './ViewSolve';
 
 class Card extends Component {
     render() {
-        const { game, activeGameId, onUpdateGame, setCoins } = this.props;
+        const { game, activeGameId, onUpdateGame, onRemoveGame, setCoins } =
+            this.props;
         const user = getCurrentUser();
         const myId = (user && user._id) || '-1';
         const solverId = (game.solver && game.solver._id) || '';
@@ -64,6 +65,7 @@ class Card extends Component {
                         gameId={game._id}
                         hint={game.hint}
                         onUpdateGame={onUpdateGame}
+                        onRemoveGame={onRemoveGame}
                     />
                 )}
                 {solverId === myId &&
@@ -89,6 +91,7 @@ class Card extends Component {
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
+                            onRemoveGame={onRemoveGame}
                             setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
@@ -101,6 +104,7 @@ class Card extends Component {
                         guessedLetters={game.guessedLetters}
                         hint={game.hint}
                         notifyServer={game._id ? true : false}
+                        onRemoveGame={onRemoveGame}
                         solver={
                             (game.solver && game.solver.displayName) ||
                             'Sparky Bot'
