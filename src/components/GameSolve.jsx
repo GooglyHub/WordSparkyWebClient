@@ -13,6 +13,7 @@ import {
 import Icon from './common/icon';
 import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
+import { coinEarned } from '../services/coinsService';
 
 /*
 GameSolve component
@@ -157,6 +158,14 @@ class GameSolve extends Component {
                         solved: true,
                         error: '',
                     });
+                    if (this.state.guessedLettersLength <= 1) {
+                        try {
+                            const coinsResponse = await coinEarned();
+                            this.props.setCoins(coinsResponse.data.coins);
+                        } catch (error) {
+                            // exceed daily limit is not a real error
+                        }
+                    }
                 } else if (response.data.state === 'SOLVING') {
                     this.setState({
                         failed: true,

@@ -66,6 +66,7 @@ class Card extends Component {
                         hint={game.hint}
                         onUpdateGame={onUpdateGame}
                         onRemoveGame={onRemoveGame}
+                        setCoins={setCoins}
                     />
                 )}
                 {solverId === myId &&

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
 import { getGames, getGamesGuest } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
-import { getCoins, collectCoins } from '../services/coinsService';
+import { getCoins } from '../services/coinsService';
 import Card from './Card';
 import Icon from './common/icon';
 import colors from './../config/colors';
@@ -14,8 +14,6 @@ class Games extends Component {
         error: '',
         message: '',
         coins: 0,
-        nextCollect: null,
-        canCollect: false,
     };
 
     async componentDidMount() {
@@ -25,17 +23,11 @@ class Games extends Component {
                 : await getGamesGuest();
             const coinsResponse = this.props.user
                 ? await getCoins()
-                : { data: { coins: 0, nextCollect: null } };
+                : { data: { coins: 0 } };
             this.setState({
                 games: this.sortGames([...gamesResponseData]),
                 error: '',
                 coins: coinsResponse.data.coins,
-                nextCollect: coinsResponse.data.nextCollect,
-                canCollect:
-                    coinsResponse.data.nextCollect &&
-                    new Date() > new Date(coinsResponse.data.nextCollect)
-                        ? true
-                        : false,
             });
         } catch (ex) {
             console.log(ex);
@@ -122,48 +114,6 @@ class Games extends Component {
         });
     }
 
-    sleep = (ms) => {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    };
-
-    handleCoinPress = async () => {
-        try {
-            const response = await collectCoins();
-            if (this.state.coins <= response.data.coins) {
-                let val = this.state.coins;
-                while (val < response.data.coins) {
-                    ++val;
-                    this.setState({ coins: val });
-                    await this.sleep(300);
-                }
-            } else {
-                this.setState({ coins: response.data.coins });
-            }
-            this.setState({
-                nextCollect: response.data.canCollect,
-                canCollect: false,
-            });
-        } catch (error) {
-            this.setState({
-                error: 'Error collecting coins: ' + error.response.data,
-            });
-        }
-    };
-
-    formatTime = (s) => {
-        let hours = Math.floor(s / 3600);
-        let minutes = Math.floor((s - hours * 3600) / 60);
-        if (hours > 1) {
-            return `in ${hours} hours`;
-        } else if (hours === 1) {
-            return 'in 1 hour';
-        } else if (minutes > 1) {
-            return `in ${minutes} minutes`;
-        } else {
-            return 'soon';
-        }
-    };
-
     setCoins = (coins) => {
         this.setState({ coins });
     };
@@ -179,50 +129,14 @@ class Games extends Component {
                         alignSelf: 'center',
                         display: 'flex',
                     }}
-                    onClick={() => {
-                        if (this.state.canCollect) {
-                            this.handleCoinPress();
-                            this.setState({ message: 'Collected free coin!' });
-                        } else {
-                            let message =
-                                'Registered users can collect coins every day';
-                            if (this.state.nextCollect) {
-                                const secondsToWait = Math.floor(
-                                    (new Date(this.state.nextCollect) -
-                                        new Date()) /
-                                        1000
-                                );
-                                if (secondsToWait > 0) {
-                                    message = `Coins will be available ${this.formatTime(
-                                        secondsToWait
-                                    )}`;
-                                } else {
-                                    message = 'Free coin is available';
-                                    this.setState({ canCollect: true });
-                                }
-                            }
-                            this.setState({ message });
-                        }
-                    }}
                 >
-                    {this.state.canCollect && (
-                        <Icon
-                            name="dots-horizontal-circle-outline"
-                            backgroundColor={colors.gold}
-                            iconColor={colors.primary}
-                            size={25}
-                            marginRight={5}
-                        ></Icon>
-                    )}
-                    {!this.state.canCollect && (
-                        <Icon
-                            name="dots-horizontal-circle-outline"
-                            backgroundColor={colors.light}
-                            iconColor={colors.primary}
-                            size={25}
-                            marginRight={5}
-                        ></Icon>
-                    )}
+                    <Icon
+                        name="dots-horizontal-circle-outline"
+                        backgroundColor={colors.gold}
+                        iconColor={colors.primary}
+                        size={25}
+                        marginRight={5}
+                    ></Icon>
                     <span>{this.state.coins}</span>
                 </div>
                 <div style={{ height: 30 }} />

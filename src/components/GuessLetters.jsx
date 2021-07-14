@@ -7,6 +7,7 @@ import {
     guessLettersGuest,
     toggleExpansion,
 } from '../services/gamesService';
+import { coinEarned } from '../services/coinsService';
 import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
 import AppKeyboard from './AppKeyboard';
@@ -61,6 +62,14 @@ class GuessLetters extends Component {
                     guess: letters,
                     gameId: this.props.gameId,
                 });
+                if (response.data.state === 'SOLVED') {
+                    try {
+                        const coinsResponse = await coinEarned();
+                        this.props.setCoins(coinsResponse.data.coins);
+                    } catch (error) {
+                        // exceed daily limit is not a real error
+                    }
+                }
                 this.props.onUpdateGame(response.data);
             } catch (ex) {
                 if (ex.response && ex.response.data) {
@@ -205,7 +214,7 @@ class GuessLetters extends Component {
                             >
                                 <button
                                     className="btn btn-primary"
-                                    onClick={this.handleSubmit}
+                                    onClick={this.handleChosenLetters}
                                     disabled={
                                         NUM_SLOTS > 0 &&
                                         this.state.letters[NUM_SLOTS - 1] ===

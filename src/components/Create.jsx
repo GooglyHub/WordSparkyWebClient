@@ -6,6 +6,7 @@ import {
     addGameForBot,
     addGameForBotAsGuest,
 } from '../services/gamesService';
+import { coinEarned } from '../services/coinsService';
 import Form from './common/form';
 import { getCurrentUser } from '../services/authService';
 
@@ -97,6 +98,12 @@ class Create extends Form {
                 }
             } else {
                 await addGame(game);
+
+                try {
+                    await coinEarned();
+                } catch (error) {
+                    // Over daily limit? Not fatal
+                }
             }
             this.setState({
                 data: {
