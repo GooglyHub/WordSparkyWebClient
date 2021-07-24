@@ -108,7 +108,7 @@ class Games extends Component {
     };
 
     removeGame(gameId) {
-        const newGames = this.state.games.filter((g) => g._id != gameId);
+        const newGames = this.state.games.filter((g) => g._id !== gameId);
         this.setState({
             games: newGames,
         });
