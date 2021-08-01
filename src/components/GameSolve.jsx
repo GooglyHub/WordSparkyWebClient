@@ -336,14 +336,18 @@ class GameSolve extends Component {
                         this.setExpanded(true);
                     }}
                     title={`Solve ${creator}'s puzzle`}
-                    onDelete={() => {
-                        if (!solved) {
-                            // If it's solved, don't remove from the server
-                            // so the puzzle creator can view the solve
-                            deleteGame({ gameId: this.props.gameId });
-                        }
-                        this.props.onRemoveGame(this.props.gameId);
-                    }}
+                    onDelete={
+                        this.props.onRemoveGame
+                            ? () => {
+                                  if (!solved) {
+                                      // If it's solved, don't remove from the server
+                                      // so the puzzle creator can view the solve
+                                      deleteGame({ gameId: this.props.gameId });
+                                  }
+                                  this.props.onRemoveGame(this.props.gameId);
+                              }
+                            : null
+                    }
                 ></CardHeader>
                 {expanded && solved && (
                     <span

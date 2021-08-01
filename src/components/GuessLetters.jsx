@@ -148,10 +148,14 @@ class GuessLetters extends Component {
                     title={`${creator} sent a puzzle (${utils.getAgeString(
                         createTime
                     )})`}
-                    onDelete={() => {
-                        deleteGame({ gameId: this.props.gameId });
-                        this.props.onRemoveGame(this.props.gameId);
-                    }}
+                    onDelete={
+                        this.props.onRemoveGame
+                            ? () => {
+                                  deleteGame({ gameId: this.props.gameId });
+                                  this.props.onRemoveGame(this.props.gameId);
+                              }
+                            : null
+                    }
                 />
                 <GameBody
                     hint={hint}

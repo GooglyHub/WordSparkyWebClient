@@ -65,7 +65,7 @@ class Card extends Component {
                         gameId={game._id}
                         hint={game.hint}
                         onUpdateGame={onUpdateGame}
-                        onRemoveGame={onRemoveGame}
+                        onRemoveGame={game.creatorBot ? onRemoveGame : null}
                         setCoins={setCoins}
                     />
                 )}
@@ -92,7 +92,7 @@ class Card extends Component {
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
-                            onRemoveGame={onRemoveGame}
+                            onRemoveGame={game.creatorBot ? onRemoveGame : null}
                             setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
