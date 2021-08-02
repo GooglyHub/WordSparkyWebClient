@@ -92,7 +92,12 @@ class Card extends Component {
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
-                            onRemoveGame={game.creatorBot ? onRemoveGame : null}
+                            onRemoveGame={
+                                game.creatorBot ||
+                                game.state === gameStates.SOLVED
+                                    ? onRemoveGame
+                                    : null
+                            }
                             setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
