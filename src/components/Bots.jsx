@@ -107,7 +107,8 @@ class Bots extends Form {
                             }}
                         >
                             <h3>{bot.name}</h3>
-                            {this.renderInput(`answer${idx}`, 'Answer')}
+                            <span>{bot.hint}</span>
+                            {this.renderInput(`answer${idx}`, '')}
                         </div>
                     ))}
                 </form>
