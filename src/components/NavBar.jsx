@@ -16,32 +16,40 @@ const NavBar = ({ user }) => {
                     alt="cute shark on an orange background"
                 />
 
-                <Icon
-                    name={(user && user.icon) || 'account'}
-                    backgroundColor={(user && user.color) || 'blue'}
-                    size={40}
-                ></Icon>
-                <div
-                    style={{
-                        fontSize: 20,
-                        marginLeft: 10,
-                        color: colors.dark,
-                        alignSelf: 'center',
-                        marginRight: 20,
-                    }}
-                >
-                    {user ? user.displayName : 'Guest'}
-                </div>
-                <li>
-                    <NavLink className="nav-item nav-link" to="/home">
-                        Home
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink className="nav-item nav-link" to="/create">
-                        Create
-                    </NavLink>
-                </li>
+                {user && (
+                    <Icon
+                        name={user.icon || 'blank'}
+                        backgroundColor={user.color || 'blue'}
+                        size={40}
+                    ></Icon>
+                )}
+                {user && (
+                    <div
+                        style={{
+                            fontSize: 20,
+                            marginLeft: 10,
+                            color: colors.dark,
+                            alignSelf: 'center',
+                            marginRight: 20,
+                        }}
+                    >
+                        {user.name}
+                    </div>
+                )}
+                {user && (
+                    <li>
+                        <NavLink className="nav-item nav-link" to="/home">
+                            Home
+                        </NavLink>
+                    </li>
+                )}
+                {/* {user && (
+                    <li>
+                        <NavLink className="nav-item nav-link" to="/create">
+                            Create
+                        </NavLink>
+                    </li>
+                )}
                 {user && (
                     <li>
                         <NavLink
@@ -51,7 +59,7 @@ const NavBar = ({ user }) => {
                             Leaderboard
                         </NavLink>
                     </li>
-                )}
+                )} */}
                 {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/account">
@@ -59,37 +67,24 @@ const NavBar = ({ user }) => {
                         </NavLink>
                     </li>
                 )}
-                <li>
-                    <NavLink className="nav-item nav-link" to="/help">
-                        Help
-                    </NavLink>
-                </li>
-                {
-                    user && user.isAdmin && <li>
+                {user && (
+                    <li>
+                        <NavLink className="nav-item nav-link" to="/help">
+                            Help
+                        </NavLink>
+                    </li>
+                )}
+                {/* {user && user.isAdmin && (
+                    <li>
                         <NavLink className="nav-item nav-link" to="/bots">
                             Bots
                         </NavLink>
                     </li>
-                }
+                )} */}
                 {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/logout">
                             Logout
-                        </NavLink>
-                    </li>
-                )}
-
-                {!user && (
-                    <li>
-                        <NavLink className="nav-item nav-link" to="/login">
-                            Login
-                        </NavLink>
-                    </li>
-                )}
-                {!user && (
-                    <li>
-                        <NavLink className="nav-item nav-link" to="/register">
-                            Register
                         </NavLink>
                     </li>
                 )}

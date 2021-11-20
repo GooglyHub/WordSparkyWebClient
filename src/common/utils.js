@@ -95,11 +95,25 @@ const getAgeString = (x) => {
     return `${years} years ago`;
 };
 
+const randomString = (len, charSet) => {
+    let str = '';
+    for (let i = 0; i < len; i++) {
+        const pos = Math.floor(Math.random() * charSet.length);
+        str += charSet.substring(pos, pos + 1);
+    }
+    return str;
+};
+
+const generateVerificationCode = () => {
+    return randomString(9, '123456789');
+};
+
 const utils = {
     decompress,
     getBoardString,
     getBoardStringForString,
     getAgeString,
+    generateVerificationCode,
 };
 
 export default utils;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import NotFound from './components/NotFound';
 import NavBar from './components/NavBar';
@@ -9,15 +9,43 @@ import Create from './components/Create';
 import Leaderboard from './components/Leaderboard';
 import Account from './components/Account';
 import Help from './components/Help';
-import { getCurrentUser } from './services/authService';
+import { getCurrentUser, getJwt, loginWithToken } from './services/authService';
 import ProtectedRoute from './components/common/protectedRoute';
 import ProtectedAdminRoute from './components/common/protectedAdminRoute';
-import Register from './components/Register';
 import Bots from './components/Bots';
+import { checkToken } from './services/usersService';
 import './App.css';
+import jwtDecode from 'jwt-decode';
 
 function App() {
-    const currUser = getCurrentUser();
+    const [currUser, setCurrUser] = useState(getCurrentUser());
+
+    useEffect(() => {
+        // Check the server if the auth token needs to be updated
+        async function f() {
+            try {
+                let token = getJwt();
+                if (token) {
+                    const resp = await checkToken(token);
+                    if (
+                        resp &&
+                        resp.data &&
+                        resp.data.valid &&
+                        resp.data.token
+                    ) {
+                        if (resp.data.token !== token) {
+                            token = resp.data.token;
+                            loginWithToken(token);
+                        }
+                    }
+                    const user = jwtDecode(token);
+                    setCurrUser(user);
+                }
+            } catch (ex) {}
+        }
+        f();
+    }, []);
+
     return (
         <>
             <NavBar user={currUser}></NavBar>
@@ -25,7 +53,6 @@ function App() {
                 <Switch>
                     <Route path="/login" component={LoginForm}></Route>
                     <Route path="/logout" component={Logout}></Route>
-                    <Route path="/register" component={Register}></Route>
                     <Route
                         path="/home"
                         render={() => <Games user={currUser}></Games>}
@@ -45,7 +72,11 @@ function App() {
                         component={Bots}
                     ></ProtectedAdminRoute>
                     <Route path="/not-found" component={NotFound}></Route>
-                    <Redirect from="/" exact to="/home"></Redirect>
+                    <Redirect
+                        from="/"
+                        exact
+                        to={currUser ? '/home' : '/login'}
+                    ></Redirect>
                     <Redirect to="/not-found"></Redirect>
                 </Switch>
             </main>

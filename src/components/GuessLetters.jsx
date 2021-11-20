@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import CardHeader from './CardHeader';
 import GameBody from './GameBody';
 import utils from '../common/utils';
-import {
-    guessLetters,
-    guessLettersGuest,
-    toggleExpansion,
-} from '../services/gamesService';
+import { guessLetters } from '../services/gamesService';
 import { coinEarned } from '../services/coinsService';
 import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
@@ -55,40 +51,28 @@ class GuessLetters extends Component {
             letters += this.state.letters[i];
         }
 
-        const user = getCurrentUser();
-        if (user) {
-            try {
-                const response = await guessLetters({
-                    guess: letters,
-                    gameId: this.props.gameId,
-                });
-                if (response.data.state === 'SOLVED') {
-                    try {
-                        const coinsResponse = await coinEarned();
-                        this.props.setCoins(coinsResponse.data.coins);
-                    } catch (error) {
-                        // exceed daily limit is not a real error
-                    }
-                }
-                this.props.onUpdateGame(response.data);
-            } catch (ex) {
-                if (ex.response && ex.response.data) {
-                    this.setState({
-                        error: ex.response.data,
-                    });
-                } else {
-                    this.setState({
-                        error: 'Error submitting request',
-                    });
+        try {
+            const response = await guessLetters({
+                guess: letters,
+                gameId: this.props.gameId,
+            });
+            if (response.data.state === 'SOLVED') {
+                try {
+                    const coinsResponse = await coinEarned();
+                    this.props.setCoins(coinsResponse.data.coins);
+                } catch (error) {
+                    // exceed daily limit is not a real error
                 }
             }
-        } else {
-            const newGame = guessLettersGuest(this.props.gameId, letters);
-            if (newGame) {
-                this.props.onUpdateGame(newGame);
+            this.props.onUpdateGame(response.data);
+        } catch (ex) {
+            if (ex.response && ex.response.data) {
+                this.setState({
+                    error: ex.response.data,
+                });
             } else {
                 this.setState({
-                    error: 'Unable to update game',
+                    error: 'Error submitting request',
                 });
             }
         }
@@ -133,7 +117,6 @@ class GuessLetters extends Component {
 
     setExpanded = (expanded) => {
         this.setState({ expanded });
-        toggleExpansion(this.props.gameId, expanded);
     };
 
     render() {

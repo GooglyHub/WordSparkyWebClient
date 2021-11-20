@@ -4,12 +4,7 @@ import GameBody from './GameBody';
 import utils from '../common/utils';
 import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
-import {
-    solvePuzzle,
-    solvePuzzleGuest,
-    revealLetter,
-    toggleExpansion,
-} from '../services/gamesService';
+import { solvePuzzle, revealLetter } from '../services/gamesService';
 import Icon from './common/icon';
 import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
@@ -133,7 +128,6 @@ class GameSolve extends Component {
 
     setExpanded = (expanded) => {
         this.setState({ expanded });
-        toggleExpansion(this.props.gameId, expanded);
     };
 
     // This is called when the user clicks on one of the
@@ -146,64 +140,37 @@ class GameSolve extends Component {
         const { letters } = this.state;
         const { gameId, onUpdateGame } = this.props;
         const user = getCurrentUser();
-        if (user) {
-            try {
-                const response = await solvePuzzle({
-                    guess: letters.join(''),
-                    gameId,
+        try {
+            const response = await solvePuzzle({
+                guess: letters.join(''),
+                gameId,
+            });
+            if (response.data.state === 'SOLVED') {
+                this.setState({
+                    failed: false,
+                    solved: true,
+                    error: '',
                 });
-                if (response.data.state === 'SOLVED') {
-                    this.setState({
-                        failed: false,
-                        solved: true,
-                        error: '',
-                    });
-                    if (this.state.guessedLettersLength <= 1) {
-                        try {
-                            const coinsResponse = await coinEarned();
-                            this.props.setCoins(coinsResponse.data.coins);
-                        } catch (error) {
-                            // exceed daily limit is not a real error
-                        }
+                if (this.state.guessedLettersLength <= 1) {
+                    try {
+                        const coinsResponse = await coinEarned();
+                        this.props.setCoins(coinsResponse.data.coins);
+                    } catch (error) {
+                        // exceed daily limit is not a real error
                     }
-                } else if (response.data.state === 'SOLVING') {
-                    this.setState({
-                        failed: true,
-                        solved: false,
-                        error: '',
-                    });
                 }
-                onUpdateGame(response.data);
-            } catch (error) {
+            } else if (response.data.state === 'SOLVING') {
                 this.setState({
-                    error: error.message + ', ' + error.response.data,
+                    failed: true,
+                    solved: false,
+                    error: '',
                 });
             }
-        } else {
-            const newGame = solvePuzzleGuest(
-                this.props.gameId,
-                letters.join('')
-            );
-            if (newGame) {
-                if (newGame.state === 'SOLVED') {
-                    this.setState({
-                        failed: false,
-                        solved: true,
-                        error: '',
-                    });
-                } else if (newGame.state === 'SOLVING') {
-                    this.setState({
-                        failed: true,
-                        solved: false,
-                        error: '',
-                    });
-                }
-                onUpdateGame(newGame);
-            } else {
-                this.setState({
-                    error: 'Unable to update game',
-                });
-            }
+            onUpdateGame(response.data);
+        } catch (error) {
+            this.setState({
+                error: error.message + ', ' + error.response.data,
+            });
         }
     };
 

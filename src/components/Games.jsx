@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
-import { getGames, getGamesGuest } from '../services/gamesService';
+import { getGames } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
 import { getCoins } from '../services/coinsService';
 import Card from './Card';
@@ -17,32 +17,28 @@ class Games extends Component {
     };
 
     async componentDidMount() {
-        try {
-            const gamesResponseData = this.props.user
-                ? (await getGames()).data
-                : await getGamesGuest();
-            const coinsResponse = this.props.user
-                ? await getCoins()
-                : { data: { coins: 0 } };
-            this.setState({
-                games: this.sortGames([...gamesResponseData]),
-                error: '',
-                coins: coinsResponse.data.coins,
-            });
-        } catch (ex) {
-            console.log(ex);
-            if (ex.response && ex.response.data) {
-                this.setState({
-                    games: [],
-                    error: `Error fetching games: ${ex.response.data}`,
-                });
-            } else {
-                this.setState({
-                    games: [],
-                    error: 'Error fetching games',
-                });
-            }
-        }
+        // try {
+        //     const gamesResponseData = (await getGames()).data;
+        //     const coinsResponse = await getCoins();
+        //     this.setState({
+        //         games: this.sortGames([...gamesResponseData]),
+        //         error: '',
+        //         coins: coinsResponse.data.coins,
+        //     });
+        // } catch (ex) {
+        //     console.log(ex);
+        //     if (ex.response && ex.response.data) {
+        //         this.setState({
+        //             games: [],
+        //             error: `Error fetching games: ${ex.response.data}`,
+        //         });
+        //     } else {
+        //         this.setState({
+        //             games: [],
+        //             error: 'Error fetching games',
+        //         });
+        //     }
+        // }
     }
 
     updateGame(gameId, newGame) {

@@ -2,44 +2,26 @@ import React from 'react';
 import Form from './common/form';
 import Joi from 'joi-browser';
 import { changePassword } from '../services/usersService';
+import utils from './../common/utils';
 
 class ChangePassword extends Form {
     state = {
-        data: {
-            displayName: this.props.user.displayName,
-            password: '',
-        },
+        verCode: '',
         errors: {},
         error: null,
-        message: null,
     };
 
-    schema = {
-        displayName: Joi.string().label('Display name'),
-        password: Joi.string().required().min(1).max(256).label('Password'),
-    };
-
-    doSubmit = async () => {
+    genCode = async () => {
         try {
-            const { password } = this.state.data;
-            const response = await changePassword({ password });
-            if (response.status === 200) {
-                this.setState({
-                    error: null,
-                    message: 'Password updated',
-                });
-            } else {
-                this.setState({
-                    error: response.data,
-                    message: null,
-                });
+            const password = utils.generateVerificationCode();
+            const resp = await changePassword({ password });
+            this.setState({ error: null, verCode: password });
+        } catch (error) {
+            let errorMsg = 'Error generating verification code';
+            if (error.response && error.response.data) {
+                errorMsg = error.response.data;
             }
-        } catch (ex) {
-            let errorMsg = 'Error changing password';
-            if (ex.response && ex.response.data) {
-                errorMsg = ex.response.data;
-            }
-            this.setState({ error: errorMsg, message: null });
+            this.setState({ error: errorMsg, verCode: '' });
         }
     };
 
@@ -48,32 +30,38 @@ class ChangePassword extends Form {
             <>
                 <div
                     style={{
-                        width: 400,
+                        width: 600,
                         padding: 10,
                     }}
                 >
-                    <form onSubmit={this.handleSubmit}>
-                        {this.renderInput(
-                            'displayName',
-                            'Display name',
-                            'text',
-                            true
-                        )}
-                        {this.renderInput(
-                            'password',
-                            'New password',
-                            'password'
-                        )}
-                        {this.renderButton('Update')}
-                    </form>
+                    <p>
+                        If you play Word Sparky on this device only, then you
+                        may skip this page.
+                    </p>
+                    <p>
+                        Using the ID and verification code below, you can log in
+                        and play Word Sparky with this account on other devices.
+                    </p>
+                    <p
+                        style={{
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            marginBottom: 10,
+                        }}
+                    >{`ID: ${this.props.user.id}`}</p>
+                    <p
+                        style={{
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            marginBottom: 10,
+                        }}
+                    >{`Verification Code: ${this.state.verCode}`}</p>
+                    <button className="btn btn-warning" onClick={this.genCode}>
+                        Generate Code
+                    </button>
                 </div>
                 {this.state.error && (
                     <div className="alert alert-danger">{this.state.error}</div>
-                )}
-                {this.state.message && (
-                    <div className="alert alert-warning">
-                        {this.state.message}
-                    </div>
                 )}
             </>
         );

@@ -38,7 +38,7 @@ class Account extends Component {
                             )}
                         ></ProtectedRoute>
                         <ProtectedRoute
-                            path="/account/changepassword"
+                            path="/account/vercode"
                             render={() => (
                                 <ChangePassword
                                     user={this.props.user}

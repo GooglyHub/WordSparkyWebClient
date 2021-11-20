@@ -2,38 +2,55 @@ import Form from './common/form';
 import Joi from 'joi-browser';
 import icons from '../common/icons';
 import colors from '../common/colors';
-import { updateProfile } from '../services/usersService';
+import { updateProfile, getNumRenames } from '../services/usersService';
 import { loginWithToken } from '../services/authService';
 import Icon from './common/icon';
 
 class Profile extends Form {
     state = {
         data: {
-            displayName: this.props.user.displayName,
-            icon: this.props.user.icon || 'account',
+            name: this.props.user.name,
+            icon: this.props.user.icon || 'blank',
             color: this.props.user.color || 'blue',
         },
         errors: {},
         error: '',
         message: '',
+        renameEnabled: false,
     };
 
     schema = {
-        displayName: Joi.string().required().min(3).max(16).label('Name'),
+        name: Joi.string().required().min(1).max(16).label('Name'),
         icon: Joi.string().required(),
         color: Joi.string().required(),
     };
 
+    updateRenameEnabled = async () => {
+        try {
+            const resp = await getNumRenames();
+            const renames = resp.data.renames || 0;
+            this.setState({ renameEnabled: renames > 0 ? true : false });
+        } catch (error) {
+            console.log(error);
+            this.setState({ renameEnabled: false });
+        }
+    };
+
+    async componentDidMount() {
+        this.updateRenameEnabled();
+    }
+
     doSubmit = async () => {
         try {
-            const { displayName, icon, color } = this.state.data;
+            const { name, icon, color } = this.state.data;
             const response = await updateProfile({
-                icon,
-                color,
+                name: this.props.user.name != name ? name : undefined,
+                icon: this.props.user.icon != icon ? icon : undefined,
+                color: this.props.user.color != color ? color : undefined,
             });
             this.setState({
                 data: {
-                    displayName,
+                    name,
                     icon,
                     color,
                 },
@@ -41,6 +58,7 @@ class Profile extends Form {
                 message: 'Profile has been updated',
             });
             loginWithToken(response.data);
+            window.location = '/';
         } catch (error) {
             if (error.response) {
                 this.setState({
@@ -71,9 +89,20 @@ class Profile extends Form {
                     Update Profile
                 </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
-                    {this.renderInput('displayName', 'Name', 'text', true)}
-                    {this.renderSelect('icon', 'Icon', icons, 'label')}
-                    {this.renderSelect('color', 'Color', colors, 'color')}
+                    {this.renderInput(
+                        'name',
+                        'Name',
+                        'text',
+                        !this.state.renameEnabled
+                    )}
+                    {this.renderSelect('icon', 'Icon', icons, 'label', false)}
+                    {this.renderSelect(
+                        'color',
+                        'Color',
+                        colors,
+                        'color',
+                        false
+                    )}
 
                     <div style={{ marginBottom: 20 }}>
                         Preview:

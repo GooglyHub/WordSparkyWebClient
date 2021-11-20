@@ -1,11 +1,7 @@
 import React from 'react';
 import Joi from 'joi-browser';
 import { getFriends } from '../services/friendsService';
-import {
-    addGame,
-    addGameForBot,
-    addGameForBotAsGuest,
-} from '../services/gamesService';
+import { addGame, addGameForBot } from '../services/gamesService';
 import { coinEarned } from '../services/coinsService';
 import Form from './common/form';
 import { getCurrentUser } from '../services/authService';
@@ -90,12 +86,7 @@ class Create extends Form {
             };
             if (solver === '-1') {
                 delete game.solverId;
-                const user = getCurrentUser();
-                if (user) {
-                    await addGameForBot(game);
-                } else {
-                    await addGameForBotAsGuest(game);
-                }
+                await addGameForBot(game);
             } else {
                 await addGame(game);
 
