@@ -18,7 +18,7 @@ const NavBar = ({ user }) => {
 
                 {user && (
                     <Icon
-                        name={user.icon || 'blank'}
+                        name={user.icon || 'account-question'}
                         backgroundColor={user.color || 'blue'}
                         size={40}
                     ></Icon>
@@ -43,23 +43,13 @@ const NavBar = ({ user }) => {
                         </NavLink>
                     </li>
                 )}
-                {/* {user && (
+                {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/create">
                             Create
                         </NavLink>
                     </li>
                 )}
-                {user && (
-                    <li>
-                        <NavLink
-                            className="nav-item nav-link"
-                            to="/leaderboard"
-                        >
-                            Leaderboard
-                        </NavLink>
-                    </li>
-                )} */}
                 {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/account">

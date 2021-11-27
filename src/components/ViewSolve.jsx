@@ -14,6 +14,7 @@ class ViewSolve extends Component {
         ),
         letters: this.getInitialLetters(),
         animating: false,
+        deletedFromServer: false,
     };
     cellsStatic = utils.decompress(this.props.boardString);
     cancel = false;
@@ -225,9 +226,13 @@ class ViewSolve extends Component {
                     title={`View ${this.props.solver}'s attempt to solve`}
                     onClick={async () => {
                         if (!this.state.expanded) {
-                            if (this.props.notifyServer) {
+                            if (
+                                this.props.notifyServer &&
+                                !this.state.deletedFromServer
+                            ) {
                                 // notify server that the solve has been viewed
                                 viewSolve({ gameId: this.props.gameId }); // does not need to await
+                                this.setState({ deletedFromServer: true });
                             }
                             this.startAnimation();
                             this.setState({ expanded: true });
@@ -235,9 +240,16 @@ class ViewSolve extends Component {
                             this.setState({ expanded: false });
                         }
                     }}
-                    onDelete={() => {
-                        if (this.props.notifyServer) {
+                    onDelete={(e) => {
+                        // trash can icon was clicked and do not want to have the
+                        // onClick handler above to be called as well
+                        e.stopPropagation();
+                        if (
+                            this.props.notifyServer &&
+                            !this.state.deletedFromServer
+                        ) {
                             viewSolve({ gameId: this.props.gameId });
+                            this.setState({ deletedFromServer: true });
                         }
                         this.props.onRemoveGame(this.props.gameId);
                     }}

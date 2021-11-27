@@ -10,7 +10,7 @@ class Profile extends Form {
     state = {
         data: {
             name: this.props.user.name,
-            icon: this.props.user.icon || 'blank',
+            icon: this.props.user.icon || 'account-question',
             color: this.props.user.color || 'blue',
         },
         errors: {},
@@ -44,9 +44,9 @@ class Profile extends Form {
         try {
             const { name, icon, color } = this.state.data;
             const response = await updateProfile({
-                name: this.props.user.name != name ? name : undefined,
-                icon: this.props.user.icon != icon ? icon : undefined,
-                color: this.props.user.color != color ? color : undefined,
+                name: this.props.user.name !== name ? name : undefined,
+                icon: this.props.user.icon !== icon ? icon : undefined,
+                color: this.props.user.color !== color ? color : undefined,
             });
             this.setState({
                 data: {
@@ -87,6 +87,17 @@ class Profile extends Form {
                     }}
                 >
                     Update Profile
+                </div>
+                <div
+                    style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        marginTop: 5,
+                        marginBottom: 5,
+                    }}
+                >
+                    ID: {this.props.user.id}
                 </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
                     {this.renderInput(

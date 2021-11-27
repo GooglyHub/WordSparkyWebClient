@@ -17,28 +17,28 @@ class Games extends Component {
     };
 
     async componentDidMount() {
-        // try {
-        //     const gamesResponseData = (await getGames()).data;
-        //     const coinsResponse = await getCoins();
-        //     this.setState({
-        //         games: this.sortGames([...gamesResponseData]),
-        //         error: '',
-        //         coins: coinsResponse.data.coins,
-        //     });
-        // } catch (ex) {
-        //     console.log(ex);
-        //     if (ex.response && ex.response.data) {
-        //         this.setState({
-        //             games: [],
-        //             error: `Error fetching games: ${ex.response.data}`,
-        //         });
-        //     } else {
-        //         this.setState({
-        //             games: [],
-        //             error: 'Error fetching games',
-        //         });
-        //     }
-        // }
+        try {
+            const gamesResponseData = (await getGames()).data;
+            const coinsResponse = await getCoins();
+            this.setState({
+                games: this.sortGames([...gamesResponseData]),
+                error: '',
+                coins: coinsResponse.data.coins,
+            });
+        } catch (ex) {
+            console.log(ex);
+            if (ex.response && ex.response.data) {
+                this.setState({
+                    games: [],
+                    error: `Error fetching games: ${ex.response.data}`,
+                });
+            } else {
+                this.setState({
+                    games: [],
+                    error: 'Error fetching games',
+                });
+            }
+        }
     }
 
     updateGame(gameId, newGame) {

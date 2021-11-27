@@ -2,9 +2,8 @@ import React from 'react';
 import Joi from 'joi-browser';
 import { getFriends } from '../services/friendsService';
 import { addGame, addGameForBot } from '../services/gamesService';
-import { coinEarned } from '../services/coinsService';
+//import { coinEarned } from '../services/coinsService';
 import Form from './common/form';
-import { getCurrentUser } from '../services/authService';
 
 const hints = [
     { value: 'I CANNOT BELIEVE THAT ...', _id: '1' },
@@ -15,10 +14,8 @@ const hints = [
     { value: 'I PREDICT ...', _id: '6' },
     { value: 'I FORGOT ...', _id: '7' },
     { value: "I'M GLAD ...", _id: '8' },
-    { value: 'I MISS ...', _id: '9' },
-    { value: 'I WANT ...', _id: '10' },
-    { value: 'I WONDER ...', _id: '11' },
-    { value: 'CONFESSION', _id: '12' },
+    { value: 'I WONDER ...', _id: '9' },
+    { value: 'CONFESSION', _id: '10' },
 ];
 
 class Create extends Form {
@@ -28,7 +25,7 @@ class Create extends Form {
         data: {
             hint: '1',
             answer: '',
-            solver: getCurrentUser() ? '' : '-1',
+            solver: '',
         },
         errors: {},
         error: '',
@@ -46,24 +43,21 @@ class Create extends Form {
     };
 
     async componentDidMount() {
-        const user = getCurrentUser();
         const sparkyBot = {
-            _id: -1,
-            displayName: 'Sparky Bot',
+            _id: '-1',
+            name: 'Sparky Bot',
         };
-        if (user) {
-            try {
-                const response = await getFriends();
-                this.setState({
-                    friends: [...response.data, sparkyBot],
-                });
-            } catch (ex) {
-                console.log(ex);
-            }
-        } else {
+        const findUser = {
+            _id: '*',
+            name: 'Find User by ID...',
+        };
+        try {
+            const response = await getFriends();
             this.setState({
-                friends: [sparkyBot],
+                friends: [...response.data, sparkyBot, findUser],
             });
+        } catch (ex) {
+            console.log(ex);
         }
     }
 
@@ -88,19 +82,26 @@ class Create extends Form {
                 delete game.solverId;
                 await addGameForBot(game);
             } else {
+                if (solver[0] === '*') {
+                    if (solver.length <= 1) {
+                        return;
+                    }
+                    delete game.solverId;
+                    game['solverUserId'] = solver.substring(1);
+                }
                 await addGame(game);
 
-                try {
-                    await coinEarned();
-                } catch (error) {
-                    // Over daily limit? Not fatal
-                }
+                // try {
+                //     await coinEarned();
+                // } catch (error) {
+                //     // Over daily limit? Not fatal
+                // }
             }
             this.setState({
                 data: {
                     hint: '1',
                     answer: '',
-                    solver: getCurrentUser() ? '' : '-1',
+                    solver: '',
                 },
                 error: '',
                 message: 'Puzzle has been created',
@@ -126,7 +127,6 @@ class Create extends Form {
     };
 
     render() {
-        const user = getCurrentUser();
         return (
             <>
                 <div
@@ -147,15 +147,48 @@ class Create extends Form {
                         'solver',
                         'Send to',
                         this.state.friends,
-                        'displayName',
-                        user ? true : false
-                    )}
-                    {!user && this.state.friends.length <= 1 && (
-                        <div className="alert alert-warning">
-                            Tip: Guests can only send puzzles to Sparky Bot.
-                            Registered users can send puzzles to friends as
-                            well.
-                        </div>
+                        'name',
+                        true,
+                        (val) => {
+                            if (val === '*') {
+                                // the user selected "Find User by Id"
+                                // (refer to findUser._id above)
+                                const userId = prompt('ID:');
+                                if (
+                                    userId &&
+                                    userId.length > 0 &&
+                                    userId.length < 16
+                                ) {
+                                    const updatedFriends = this.state.friends;
+                                    let newId = `*${userId}`;
+                                    let found = false;
+                                    for (
+                                        let i = 0;
+                                        i < updatedFriends.length;
+                                        i++
+                                    ) {
+                                        if (updatedFriends[i]._id === newId) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        updatedFriends.push({
+                                            _id: newId,
+                                            name: `ID: ${userId}`,
+                                        });
+                                        this.setState({
+                                            friends: updatedFriends,
+                                        });
+                                    }
+                                    return newId;
+                                } else {
+                                    // signify cancel so the UI will revert the selection
+                                    return null;
+                                }
+                            }
+                            return val;
+                        }
                     )}
                     {this.renderButton('Create')}
                 </form>

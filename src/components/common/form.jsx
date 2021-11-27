@@ -39,16 +39,28 @@ class Form extends Component {
         this.doSubmit();
     };
 
-    handleChange = ({ currentTarget: input }) => {
+    handleChange = ({ currentTarget: input }, changeCallback) => {
+        const data = { ...this.state.data };
         const errors = { ...this.state.errors };
+
+        let val = input.value;
+        if (changeCallback) {
+            // Allow the callback to change the value
+            val = changeCallback(val);
+            if (val === null) {
+                // canceled
+                input.value = this.state.data[input.name];
+                return;
+            }
+        }
+
         const errorMessage = this.validateProperty(input);
         if (errorMessage) {
             errors[input.name] = errorMessage;
         } else {
             delete errors[input.name];
         }
-        const data = { ...this.state.data };
-        data[input.name] = input.value;
+        data[input.name] = val;
         this.setState({ data, errors });
     };
 
@@ -75,7 +87,14 @@ class Form extends Component {
         );
     }
 
-    renderSelect(name, label, options, nameField, includeBlank = true) {
+    renderSelect(
+        name,
+        label,
+        options,
+        nameField,
+        includeBlank = true,
+        changeCallback = null
+    ) {
         const { data, errors } = this.state;
         return (
             <Select
@@ -86,7 +105,9 @@ class Form extends Component {
                 nameField={nameField}
                 error={errors[name]}
                 includeBlank={includeBlank}
-                onChange={this.handleChange}
+                onChange={(currentTarget) => {
+                    this.handleChange(currentTarget, changeCallback);
+                }}
             />
         );
     }

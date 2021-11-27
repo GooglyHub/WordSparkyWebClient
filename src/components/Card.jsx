@@ -42,7 +42,7 @@ class Card extends Component {
                             )}
                             hint={game.hint}
                             solver={
-                                (game.solver && game.solver.displayName) ||
+                                (game.solver && game.solver.name) ||
                                 'Sparky Bot'
                             }
                         />
@@ -54,7 +54,7 @@ class Card extends Component {
                         createTime={game.createTime}
                         creator={
                             game.creator
-                                ? game.creator.displayName
+                                ? game.creator.name
                                 : game.creatorBot
                                 ? game.creatorBot.name
                                 : ''
@@ -77,7 +77,7 @@ class Card extends Component {
                             boardString={utils.getBoardString(game)}
                             creator={
                                 game.creator
-                                    ? game.creator.displayName
+                                    ? game.creator.name
                                     : game.creatorBot
                                     ? game.creatorBot.name
                                     : ''
@@ -112,8 +112,7 @@ class Card extends Component {
                         notifyServer={game._id ? true : false}
                         onRemoveGame={onRemoveGame}
                         solver={
-                            (game.solver && game.solver.displayName) ||
-                            'Sparky Bot'
+                            (game.solver && game.solver.name) || 'Sparky Bot'
                         }
                     ></ViewSolve>
                 )}

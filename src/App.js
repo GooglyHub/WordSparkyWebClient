@@ -6,7 +6,6 @@ import LoginForm from './components/LoginForm';
 import Logout from './components/Logout';
 import Games from './components/Games';
 import Create from './components/Create';
-import Leaderboard from './components/Leaderboard';
 import Account from './components/Account';
 import Help from './components/Help';
 import { getCurrentUser, getJwt, loginWithToken } from './services/authService';
@@ -58,10 +57,6 @@ function App() {
                         render={() => <Games user={currUser}></Games>}
                     ></Route>
                     <Route path="/create" component={Create}></Route>
-                    <ProtectedRoute
-                        path="/leaderboard"
-                        component={Leaderboard}
-                    ></ProtectedRoute>
                     <ProtectedRoute
                         path="/account"
                         render={() => <Account user={currUser}></Account>}
