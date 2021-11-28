@@ -6,9 +6,8 @@ import colors from '../config/colors';
 import AppKeyboard from './AppKeyboard';
 import { solvePuzzle, revealLetter } from '../services/gamesService';
 import Icon from './common/icon';
-import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
-import { coinEarned } from '../services/coinsService';
+//import { coinEarned } from '../services/coinsService';
 
 /*
 GameSolve component
@@ -139,7 +138,6 @@ class GameSolve extends Component {
     handleSubmit = async () => {
         const { letters } = this.state;
         const { gameId, onUpdateGame } = this.props;
-        const user = getCurrentUser();
         try {
             const response = await solvePuzzle({
                 guess: letters.join(''),
@@ -152,12 +150,8 @@ class GameSolve extends Component {
                     error: '',
                 });
                 if (this.state.guessedLettersLength <= 1) {
-                    try {
-                        const coinsResponse = await coinEarned();
-                        this.props.setCoins(coinsResponse.data.coins);
-                    } catch (error) {
-                        // exceed daily limit is not a real error
-                    }
+                    const SOLVING_REWARD = 5;
+                    this.props.setCoins(this.props.coins + SOLVING_REWARD);
                 }
             } else if (response.data.state === 'SOLVING') {
                 this.setState({
@@ -247,6 +241,7 @@ class GameSolve extends Component {
     };
 
     async handleReveal() {
+        this.setState({ error: '' });
         try {
             const response = await revealLetter({
                 gameId: this.props.gameId,
@@ -262,20 +257,17 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        const user = getCurrentUser();
-        if (user) {
-            if (
-                window.confirm(
-                    'Spend 5 coins to get a hint on the selected letter?'
-                )
-            ) {
-                this.handleReveal();
+        const REVEAL_PRICE = 25;
+        if (
+            window.confirm(
+                `Spend ${REVEAL_PRICE} coins to get a hint on the selected letter?`
+            )
+        ) {
+            if (this.props.coins < REVEAL_PRICE) {
+                alert('Sorry, you do not have enough coins');
+                return;
             }
-        } else {
-            this.setState({
-                message:
-                    'Registered users can spend 5 coins to reveal the selected letter',
-            });
+            this.handleReveal();
         }
     }
 
@@ -306,12 +298,24 @@ class GameSolve extends Component {
                     onDelete={
                         this.props.onRemoveGame
                             ? () => {
-                                  if (!solved) {
-                                      // If it's solved, don't remove from the server
-                                      // so the puzzle creator can view the solve
-                                      deleteGame({ gameId: this.props.gameId });
+                                  if (solved) {
+                                      this.props.onRemoveGame(
+                                          this.props.gameId
+                                      );
+                                  } else {
+                                      if (
+                                          window.confirm(
+                                              'Are you sure you want to delete this puzzle?'
+                                          )
+                                      ) {
+                                          deleteGame({
+                                              gameId: this.props.gameId,
+                                          });
+                                          this.props.onRemoveGame(
+                                              this.props.gameId
+                                          );
+                                      }
                                   }
-                                  this.props.onRemoveGame(this.props.gameId);
                               }
                             : null
                     }

@@ -156,6 +156,7 @@ class Games extends Component {
                                 this.removeGame(gameId);
                             }}
                             setCoins={this.setCoins}
+                            coins={this.state.coins}
                             activeGameId={this.state.activeGameId}
                         />
                     );

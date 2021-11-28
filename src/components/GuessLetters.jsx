@@ -3,8 +3,6 @@ import CardHeader from './CardHeader';
 import GameBody from './GameBody';
 import utils from '../common/utils';
 import { guessLetters } from '../services/gamesService';
-import { coinEarned } from '../services/coinsService';
-import { getCurrentUser } from '../services/authService';
 import { deleteGame } from '../services/gamesService';
 import AppKeyboard from './AppKeyboard';
 import colors from './../config/colors';
@@ -57,12 +55,8 @@ class GuessLetters extends Component {
                 gameId: this.props.gameId,
             });
             if (response.data.state === 'SOLVED') {
-                try {
-                    const coinsResponse = await coinEarned();
-                    this.props.setCoins(coinsResponse.data.coins);
-                } catch (error) {
-                    // exceed daily limit is not a real error
-                }
+                const SOLVING_REWARD = 5;
+                this.props.setCoins(this.props.coins + SOLVING_REWARD);
             }
             this.props.onUpdateGame(response.data);
         } catch (ex) {
@@ -134,8 +128,16 @@ class GuessLetters extends Component {
                     onDelete={
                         this.props.onRemoveGame
                             ? () => {
-                                  deleteGame({ gameId: this.props.gameId });
-                                  this.props.onRemoveGame(this.props.gameId);
+                                  if (
+                                      window.confirm(
+                                          'Are you sure you want to delete this puzzle?'
+                                      )
+                                  ) {
+                                      deleteGame({ gameId: this.props.gameId });
+                                      this.props.onRemoveGame(
+                                          this.props.gameId
+                                      );
+                                  }
                               }
                             : null
                     }

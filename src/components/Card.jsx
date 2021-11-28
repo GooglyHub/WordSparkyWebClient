@@ -10,8 +10,14 @@ import ViewSolve from './ViewSolve';
 
 class Card extends Component {
     render() {
-        const { game, activeGameId, onUpdateGame, onRemoveGame, setCoins } =
-            this.props;
+        const {
+            game,
+            activeGameId,
+            onUpdateGame,
+            onRemoveGame,
+            setCoins,
+            coins,
+        } = this.props;
         const user = getCurrentUser();
         const myId = (user && user._id) || '-1';
         const solverId = (game.solver && game.solver._id) || '';
@@ -51,6 +57,7 @@ class Card extends Component {
                     <GuessLetters
                         answer={game.answer}
                         boardString={utils.getBoardString(game)}
+                        coins={coins}
                         createTime={game.createTime}
                         creator={
                             game.creator
@@ -65,7 +72,7 @@ class Card extends Component {
                         gameId={game._id}
                         hint={game.hint}
                         onUpdateGame={onUpdateGame}
-                        onRemoveGame={game.creatorBot ? onRemoveGame : null}
+                        onRemoveGame={onRemoveGame}
                         setCoins={setCoins}
                     />
                 )}
@@ -75,6 +82,7 @@ class Card extends Component {
                         <GameSolve
                             answer={game.answer}
                             boardString={utils.getBoardString(game)}
+                            coins={coins}
                             creator={
                                 game.creator
                                     ? game.creator.name
@@ -92,12 +100,7 @@ class Card extends Component {
                             guessedLetters={game.guessedLetters}
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
-                            onRemoveGame={
-                                game.creatorBot ||
-                                game.state === gameStates.SOLVED
-                                    ? onRemoveGame
-                                    : null
-                            }
+                            onRemoveGame={onRemoveGame}
                             setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
