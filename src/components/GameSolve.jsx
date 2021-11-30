@@ -297,7 +297,8 @@ class GameSolve extends Component {
                     title={`Solve ${creator}'s puzzle`}
                     onDelete={
                         this.props.onRemoveGame
-                            ? () => {
+                            ? (e) => {
+                                  e.stopPropagation();
                                   if (solved) {
                                       this.props.onRemoveGame(
                                           this.props.gameId

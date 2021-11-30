@@ -7,18 +7,6 @@ const getAllBots = () => {
     return http.get(apiEndpoint + '/all');
 };
 
-const removeBot = (bot) => {
-    return http.delete(apiEndpoint, { data: bot });
-};
-
-const addBot = (bot) => {
-    return http.put(apiEndpoint, bot);
-};
-
-const getMyBots = () => {
-    return http.get(apiEndpoint);
-};
-
 const updateBotPuzzle = (data) => {
     return http.post(apiEndpoint, data);
 };
@@ -59,11 +47,4 @@ const getHeadlines = async (categories) => {
     return headlines;
 };
 
-export {
-    getAllBots,
-    removeBot,
-    addBot,
-    getMyBots,
-    updateBotPuzzle,
-    getHeadlines,
-};
+export { getAllBots, updateBotPuzzle, getHeadlines };

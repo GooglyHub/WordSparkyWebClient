@@ -64,13 +64,13 @@ const NavBar = ({ user }) => {
                         </NavLink>
                     </li>
                 )}
-                {/* {user && user.isAdmin && (
+                {user && user.isAdmin && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/bots">
                             Bots
                         </NavLink>
                     </li>
-                )} */}
+                )}
                 {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/logout">

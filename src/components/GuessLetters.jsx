@@ -127,7 +127,8 @@ class GuessLetters extends Component {
                     )})`}
                     onDelete={
                         this.props.onRemoveGame
-                            ? () => {
+                            ? (e) => {
+                                  e.stopPropagation();
                                   if (
                                       window.confirm(
                                           'Are you sure you want to delete this puzzle?'
