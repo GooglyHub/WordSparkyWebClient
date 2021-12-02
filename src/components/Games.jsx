@@ -13,16 +13,18 @@ class Games extends Component {
         activeGameId: '',
         error: '',
         message: '',
-        coins: 0,
+        coins: null,
     };
 
     async componentDidMount() {
         try {
             const gamesResponseData = (await getGames()).data;
-            const coinsResponse = await getCoins();
             this.setState({
                 games: this.sortGames([...gamesResponseData]),
                 error: '',
+            });
+            const coinsResponse = await getCoins();
+            this.setState({
                 coins: coinsResponse.data.coins,
             });
         } catch (ex) {
@@ -117,24 +119,26 @@ class Games extends Component {
     render() {
         return (
             <>
-                <div
-                    style={{
-                        position: 'absolute',
-                        right: 25,
-                        flexDirection: 'row',
-                        alignSelf: 'center',
-                        display: 'flex',
-                    }}
-                >
-                    <Icon
-                        name="dots-horizontal-circle-outline"
-                        backgroundColor={colors.gold}
-                        iconColor={colors.primary}
-                        size={25}
-                        marginRight={5}
-                    ></Icon>
-                    <span>{this.state.coins}</span>
-                </div>
+                {this.state.coins !== null && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            right: 25,
+                            flexDirection: 'row',
+                            alignSelf: 'center',
+                            display: 'flex',
+                        }}
+                    >
+                        <Icon
+                            name="dots-horizontal-circle-outline"
+                            backgroundColor={colors.gold}
+                            iconColor={colors.primary}
+                            size={25}
+                            marginRight={5}
+                        ></Icon>
+                        <span>{this.state.coins}</span>
+                    </div>
+                )}
                 <div style={{ height: 30 }} />
                 {this.state.error && (
                     <div className="alert alert-danger">{this.state.error}</div>

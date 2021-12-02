@@ -257,7 +257,7 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        const REVEAL_PRICE = 25;
+        const REVEAL_PRICE = 50;
         if (
             window.confirm(
                 `Spend ${REVEAL_PRICE} coins to get a hint on the selected letter?`
