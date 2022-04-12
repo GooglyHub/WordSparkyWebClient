@@ -5,13 +5,14 @@ import colors from '../common/colors';
 import { updateProfile, getNumRenames } from '../services/usersService';
 import { loginWithToken } from '../services/authService';
 import Icon from './common/icon';
+import profile from '../common/profile';
 
 class Profile extends Form {
     state = {
         data: {
-            name: this.props.user.name,
-            icon: this.props.user.icon || 'account-question',
-            color: this.props.user.color || 'blue',
+            name: this.props.user.username,
+            icon: this.props.user.icon,
+            color: this.props.user.color,
         },
         errors: {},
         error: '',
@@ -44,7 +45,7 @@ class Profile extends Form {
         try {
             const { name, icon, color } = this.state.data;
             const response = await updateProfile({
-                name: this.props.user.name !== name ? name : undefined,
+                name: this.props.user.username !== name ? name : undefined,
                 icon: this.props.user.icon !== icon ? icon : undefined,
                 color: this.props.user.color !== color ? color : undefined,
             });

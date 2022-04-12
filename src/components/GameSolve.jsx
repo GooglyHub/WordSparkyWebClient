@@ -7,7 +7,6 @@ import AppKeyboard from './AppKeyboard';
 import { solvePuzzle, revealLetter } from '../services/gamesService';
 import Icon from './common/icon';
 import { deleteGame } from '../services/gamesService';
-//import { coinEarned } from '../services/coinsService';
 
 /*
 GameSolve component
@@ -16,8 +15,8 @@ Output: updated Game after user makes a move, e.g. "I L??E CHEESECAKE"
  */
 class GameSolve extends Component {
     state = {
-        cells: utils.decompress(this.props.boardString),
-        cellsStatic: utils.decompress(this.props.boardString),
+        cells: utils.decompress(utils.getBoardString(this.props.guesses)),
+        cellsStatic: utils.decompress(utils.getBoardString(this.props.guesses)),
         cursor: { row: -1, col: -1, idx: -1 },
         // cursorToPos is a mapping from cursor index to position in the
         //    1-dimensional answer string.
@@ -37,13 +36,9 @@ class GameSolve extends Component {
     };
 
     static updateState(tempProps, tempState) {
-        const {
-            boardString,
-            expandedInitially,
-            guesses,
-            guessedLetters,
-            showSolved,
-        } = tempProps;
+        const { expandedInitially, guesses, guessedLetters, showSolved } =
+            tempProps;
+        const boardString = utils.getBoardString(guesses);
         const initialCells = utils.decompress(boardString);
         const initialCursorPositions = [];
         const initialLetters = [];
@@ -149,10 +144,6 @@ class GameSolve extends Component {
                     solved: true,
                     error: '',
                 });
-                if (this.state.guessedLettersLength <= 1) {
-                    const SOLVING_REWARD = 5;
-                    this.props.setCoins(this.props.coins + SOLVING_REWARD);
-                }
             } else if (response.data.state === 'SOLVING') {
                 this.setState({
                     failed: true,
@@ -248,7 +239,6 @@ class GameSolve extends Component {
                 cursorIdx: this.state.cursor.idx,
             });
             this.handlePress({ key: response.data.letter });
-            this.props.setCoins(response.data.coins);
         } catch (error) {
             this.setState({
                 error: error.message + ', ' + error.response.data,
@@ -263,10 +253,6 @@ class GameSolve extends Component {
                 `Spend ${REVEAL_PRICE} coins to get a hint on the selected letter?`
             )
         ) {
-            if (this.props.coins < REVEAL_PRICE) {
-                alert('Sorry, you do not have enough coins');
-                return;
-            }
             this.handleReveal();
         }
     }
@@ -286,13 +272,15 @@ class GameSolve extends Component {
             message,
             solved,
         } = this.state;
-        const { creator, hint } = this.props;
+        const { creator, creatorColor, creatorIcon, hint } = this.props;
         return (
             <>
                 <CardHeader
+                    chevron={this.state.expanded ? 'up' : 'down'}
+                    iconColor={creatorColor}
+                    iconName={creatorIcon}
                     onClick={() => {
-                        //this.setExpanded(!this.state.expanded);
-                        this.setExpanded(true);
+                        this.setExpanded(!this.state.expanded);
                     }}
                     title={`Solve ${creator}'s puzzle`}
                     onDelete={

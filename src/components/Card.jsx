@@ -7,21 +7,31 @@ import StaticGame from './StaticGame';
 import GuessLetters from './GuessLetters';
 import GameSolve from './GameSolve';
 import ViewSolve from './ViewSolve';
+import profile from '../common/profile';
+import NoPuzzlesCard from './NoPuzzlesCard';
 
 class Card extends Component {
     render() {
-        const {
-            game,
-            activeGameId,
-            onUpdateGame,
-            onRemoveGame,
-            setCoins,
-            coins,
-        } = this.props;
+        const { game, activeGameId, onUpdateGame, onRemoveGame } = this.props;
         const user = getCurrentUser();
         const myId = (user && user._id) || '-1';
         const solverId = (game.solver && game.solver._id) || '';
         const creatorId = (game.creator && game.creator._id) || '';
+        const creatorName = game.creator
+            ? profile.getUsername(game.creator)
+            : game.creatorBot
+            ? game.creatorBot.name
+            : '';
+        const creatorIcon = game.creator
+            ? profile.getIcon(game.creator)
+            : game.creatorBot
+            ? game.creatorBot.icon
+            : '';
+        const creatorColor = game.creator
+            ? profile.getColor(game.creator)
+            : game.creatorBot
+            ? game.creatorBot.color
+            : '';
 
         return (
             <div
@@ -39,57 +49,45 @@ class Card extends Component {
                 }}
             >
                 {solverId !== myId &&
-                    game.creator &&
                     creatorId === myId &&
                     game.state !== gameStates.SOLVED && (
                         <StaticGame
                             boardString={utils.getBoardStringForString(
-                                game.answer || ''
+                                game.answer
                             )}
                             hint={game.hint}
-                            solver={
-                                (game.solver && game.solver.name) ||
-                                'Sparky Bot'
-                            }
+                            solver={profile.getUsername(game.solver)}
+                            solverColor={profile.getColor(game.solver)}
+                            solverIcon={profile.getIcon(game.solver)}
                         />
                     )}
-                {solverId === myId && game.state === gameStates.NEW && (
-                    <GuessLetters
-                        answer={game.answer}
-                        boardString={utils.getBoardString(game)}
-                        coins={coins}
-                        createTime={game.createTime}
-                        creator={
-                            game.creator
-                                ? game.creator.name
-                                : game.creatorBot
-                                ? game.creatorBot.name
-                                : ''
-                        }
-                        expandedInitially={
-                            game._id === activeGameId || game.active
-                        }
-                        gameId={game._id}
-                        hint={game.hint}
-                        onUpdateGame={onUpdateGame}
-                        onRemoveGame={onRemoveGame}
-                        setCoins={setCoins}
-                    />
-                )}
+                {(solverId === myId || game.creatorBot) &&
+                    game.state === gameStates.NEW && (
+                        <GuessLetters
+                            boardString={utils.getBoardString(game.guesses)}
+                            botPuzzleId={game.botPuzzle}
+                            createTime={game.createTime}
+                            creator={creatorName}
+                            creatorColor={creatorColor}
+                            creatorIcon={creatorIcon}
+                            expandedInitially={
+                                game._id === activeGameId || game.active
+                            }
+                            gameId={game._id}
+                            hasSolver={game.solver ? true : false}
+                            hint={game.hint}
+                            isBotPuzzle={game.creatorBot ? true : false}
+                            onUpdateGame={onUpdateGame}
+                            onRemoveGame={onRemoveGame}
+                        />
+                    )}
                 {solverId === myId &&
                     (game.state === gameStates.SOLVING ||
                         game.state === gameStates.SOLVED) && (
                         <GameSolve
-                            answer={game.answer}
-                            boardString={utils.getBoardString(game)}
-                            coins={coins}
-                            creator={
-                                game.creator
-                                    ? game.creator.name
-                                    : game.creatorBot
-                                    ? game.creatorBot.name
-                                    : ''
-                            }
+                            creator={creatorName}
+                            creatorColor={creatorColor}
+                            creatorIcon={creatorIcon}
                             expandedInitially={
                                 game._id === activeGameId ||
                                 game.state === gameStates.SOLVED ||
@@ -101,7 +99,6 @@ class Card extends Component {
                             hint={game.hint}
                             onUpdateGame={onUpdateGame}
                             onRemoveGame={onRemoveGame}
-                            setCoins={setCoins}
                             showSolved={game.state === gameStates.SOLVED}
                         />
                     )}
@@ -112,12 +109,14 @@ class Card extends Component {
                         guesses={game.guesses}
                         guessedLetters={game.guessedLetters}
                         hint={game.hint}
-                        notifyServer={game._id ? true : false}
                         onRemoveGame={onRemoveGame}
-                        solver={
-                            (game.solver && game.solver.name) || 'Sparky Bot'
-                        }
+                        solver={profile.getUsername(game.solver)}
+                        solverColor={profile.getColor(game.solver)}
+                        solverIcon={profile.getIcon(game.solver)}
                     ></ViewSolve>
+                )}
+                {game.getRandomBotPuzzle && (
+                    <NoPuzzlesCard onClick={game.getRandomBotPuzzle} />
                 )}
             </div>
         );

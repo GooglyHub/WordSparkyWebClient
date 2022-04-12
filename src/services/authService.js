@@ -4,9 +4,24 @@ import jwtDecode from 'jwt-decode';
 const apiEndpoint = '/auth';
 const tokenKey = 'token';
 
-const login = async (id, verCode) => {
-    const response = await http.post(apiEndpoint, { id, verCode });
-    const authToken = response.data;
+const login = async (username, password) => {
+    const response = await http.post(apiEndpoint + '/login', {
+        username,
+        password,
+    });
+    if (response?.data?.user?.isPremium !== true) {
+        throw {
+            response: {
+                data: {
+                    error: 'Only premium users can use website',
+                },
+            },
+        };
+    }
+    const authToken = response.data.user.token;
+    // todo: also extract the user and friends here
+    // response.data.user
+    // response.data.friends
     localStorage.setItem(tokenKey, authToken);
 };
 

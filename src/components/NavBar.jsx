@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import logo from './logo.png';
 import colors from './../config/colors';
 import Icon from './common/icon';
+import profile from '../common/profile';
 
 const NavBar = ({ user }) => {
     return (
@@ -16,14 +17,14 @@ const NavBar = ({ user }) => {
                     alt="cute shark on an orange background"
                 />
 
-                {user && (
+                {user && user.isPremium && (
                     <Icon
-                        name={user.icon || 'account-question'}
-                        backgroundColor={user.color || 'blue'}
+                        name={profile.getIcon(user)}
+                        backgroundColor={profile.getColor(user)}
                         size={40}
                     ></Icon>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <div
                         style={{
                             fontSize: 20,
@@ -33,45 +34,45 @@ const NavBar = ({ user }) => {
                             marginRight: 20,
                         }}
                     >
-                        {user.name}
+                        {user.username}
                     </div>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/home">
                             Home
                         </NavLink>
                     </li>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/create">
                             Create
                         </NavLink>
                     </li>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/account">
                             Account
                         </NavLink>
                     </li>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/help">
                             Help
                         </NavLink>
                     </li>
                 )}
-                {user && user.isAdmin && (
+                {user && user.isPremium && user.isAdmin && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/bots">
                             Bots
                         </NavLink>
                     </li>
                 )}
-                {user && (
+                {user && user.isPremium && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/logout">
                             Logout

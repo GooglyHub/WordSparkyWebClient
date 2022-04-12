@@ -2,7 +2,6 @@ import React from 'react';
 import Joi from 'joi-browser';
 import { getFriends } from '../services/friendsService';
 import { addGame, addGameForBot } from '../services/gamesService';
-//import { coinEarned } from '../services/coinsService';
 import Form from './common/form';
 
 const hints = [
@@ -21,7 +20,6 @@ const hints = [
 class Create extends Form {
     state = {
         friends: [],
-        coins: 0,
         data: {
             hint: '1',
             answer: '',
@@ -90,12 +88,6 @@ class Create extends Form {
                     game['solverUserId'] = solver.substring(1);
                 }
                 await addGame(game);
-
-                // try {
-                //     await coinEarned();
-                // } catch (error) {
-                //     // Over daily limit? Not fatal
-                // }
             }
             this.setState({
                 data: {

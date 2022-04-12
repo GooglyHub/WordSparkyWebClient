@@ -14,6 +14,10 @@ const getGames = () => {
     return http.get(apiEndpoint);
 };
 
+const getBotPuzzle = () => {
+    return http.post(apiEndpoint + '/random');
+};
+
 const guessLetters = (data) => {
     return http.post(apiEndpoint + '/guess', data);
 };
@@ -30,6 +34,10 @@ const deleteGame = (game) => {
     return http.post(apiEndpoint + '/del', game);
 };
 
+const rejectBotPuzzle = (botPuzzleId) => {
+    return http.post(apiEndpoint + '/reject', { botPuzzleId });
+};
+
 const revealLetter = (data) => {
     return http.get(apiEndpoint + '/reveal', { params: data });
 };
@@ -38,9 +46,11 @@ export {
     addGame,
     addGameForBot,
     getGames,
+    getBotPuzzle,
     guessLetters,
     solvePuzzle,
     viewSolve,
     deleteGame,
+    rejectBotPuzzle,
     revealLetter,
 };

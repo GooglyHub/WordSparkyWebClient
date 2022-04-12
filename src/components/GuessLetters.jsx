@@ -3,7 +3,7 @@ import CardHeader from './CardHeader';
 import GameBody from './GameBody';
 import utils from '../common/utils';
 import { guessLetters } from '../services/gamesService';
-import { deleteGame } from '../services/gamesService';
+import { deleteGame, rejectBotPuzzle } from '../services/gamesService';
 import AppKeyboard from './AppKeyboard';
 import colors from './../config/colors';
 import GameCell from './GameCell';
@@ -54,10 +54,6 @@ class GuessLetters extends Component {
                 guess: letters,
                 gameId: this.props.gameId,
             });
-            if (response.data.state === 'SOLVED') {
-                const SOLVING_REWARD = 5;
-                this.props.setCoins(this.props.coins + SOLVING_REWARD);
-            }
             this.props.onUpdateGame(response.data);
         } catch (ex) {
             if (ex.response && ex.response.data) {
@@ -114,19 +110,38 @@ class GuessLetters extends Component {
     };
 
     render() {
-        const { boardString, creator, createTime, hint } = this.props;
+        const {
+            boardString,
+            botPuzzleId,
+            creator,
+            creatorIcon,
+            creatorColor,
+            createTime,
+            gameId,
+            hasSolver,
+            hint,
+            isBotPuzzle,
+            onRemoveGame,
+        } = this.props;
 
         return (
             <>
                 <CardHeader
+                    chevron={this.state.expanded ? 'up' : 'down'}
+                    iconColor={creatorColor}
+                    iconName={creatorIcon}
                     onClick={() => {
-                        this.setExpanded(true);
+                        this.setExpanded(!this.state.expanded);
                     }}
-                    title={`${creator} sent a puzzle (${utils.getAgeString(
-                        createTime
-                    )})`}
+                    title={
+                        isBotPuzzle
+                            ? `${creator} Bot Puzzle`
+                            : `${creator} sent a puzzle (${utils.getAgeString(
+                                  createTime
+                              )})`
+                    }
                     onDelete={
-                        this.props.onRemoveGame
+                        onRemoveGame
                             ? (e) => {
                                   e.stopPropagation();
                                   if (
@@ -134,10 +149,12 @@ class GuessLetters extends Component {
                                           'Are you sure you want to delete this puzzle?'
                                       )
                                   ) {
-                                      deleteGame({ gameId: this.props.gameId });
-                                      this.props.onRemoveGame(
-                                          this.props.gameId
-                                      );
+                                      if (hasSolver) {
+                                          deleteGame({ gameId });
+                                      } else {
+                                          rejectBotPuzzle(botPuzzleId);
+                                      }
+                                      onRemoveGame(gameId);
                                   }
                               }
                             : null

@@ -7,28 +7,28 @@ import { login, getCurrentUser } from '../services/authService';
 class LoginForm extends Form {
     state = {
         data: {
-            id: '',
-            verCode: '',
+            username: '',
+            password: '',
         },
         errors: {},
         error: null,
     };
 
     schema = {
-        id: Joi.string().required().label('ID'),
-        verCode: Joi.string().required().label('Verification Code'),
+        username: Joi.string().required().label('Username'),
+        password: Joi.string().required().label('Password'),
     };
 
     doSubmit = async () => {
         try {
-            const { id, verCode } = this.state.data;
-            await login(id, verCode);
+            const { username, password } = this.state.data;
+            await login(username, password);
             const { state } = this.props.location;
             window.location = state ? state.from.pathname : '/';
         } catch (ex) {
             let msg = 'Error logging in';
-            if (ex.response && ex.response.data) {
-                msg = ex.response.data;
+            if (ex.response && ex.response.data && ex.response.data.error) {
+                msg = ex.response.data.error;
             }
             this.setState({ error: msg });
         }
@@ -47,8 +47,8 @@ class LoginForm extends Form {
                     }}
                 >
                     <form onSubmit={this.handleSubmit}>
-                        {this.renderInput('id', 'ID')}
-                        {this.renderInput('verCode', 'Verification Code')}
+                        {this.renderInput('username', 'Username')}
+                        {this.renderInput('password', 'Password', 'password')}
                         {this.renderButton('Login')}
                     </form>
                 </div>

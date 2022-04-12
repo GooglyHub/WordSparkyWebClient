@@ -1,6 +1,6 @@
-const getBoardString = (game) => {
+const getBoardString = (guesses) => {
     return getBoardStringForString(
-        game.guesses.length > 0 ? game.guesses[game.guesses.length - 1] : ''
+        guesses.length > 0 ? guesses[guesses.length - 1] : ''
     );
 };
 

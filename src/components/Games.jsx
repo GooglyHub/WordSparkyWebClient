@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import gameStates from '../common/gameStates';
-import { getGames } from '../services/gamesService';
+import { getGames, getBotPuzzle } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
-import { getCoins } from '../services/coinsService';
 import Card from './Card';
-import Icon from './common/icon';
-import colors from './../config/colors';
 
 class Games extends Component {
     state = {
@@ -13,19 +10,17 @@ class Games extends Component {
         activeGameId: '',
         error: '',
         message: '',
-        coins: null,
+        loading: false,
     };
 
     async componentDidMount() {
         try {
+            this.setState({ loading: true });
             const gamesResponseData = (await getGames()).data;
             this.setState({
                 games: this.sortGames([...gamesResponseData]),
                 error: '',
-            });
-            const coinsResponse = await getCoins();
-            this.setState({
-                coins: coinsResponse.data.coins,
+                loading: false,
             });
         } catch (ex) {
             console.log(ex);
@@ -33,11 +28,13 @@ class Games extends Component {
                 this.setState({
                     games: [],
                     error: `Error fetching games: ${ex.response.data}`,
+                    loading: false,
                 });
             } else {
                 this.setState({
                     games: [],
                     error: 'Error fetching games',
+                    loading: false,
                 });
             }
         }
@@ -63,41 +60,38 @@ class Games extends Component {
         const user = getCurrentUser();
         const myId = (user && user._id) || '-1';
         const getFirstTieBreaker = (game) => {
-            const solverId = (game.solver && game.solver._id) || '';
-            if (game.state === gameStates.SOLVED && solverId !== myId) {
+            if (game.state === gameStates.SOLVED && game.solver?._id !== myId) {
                 return 0;
             }
-            if (game.state === gameStates.SOLVED && solverId === myId) {
+            if (
+                (game.state === gameStates.SOLVING ||
+                    game.state === gameStates.SOLVED) &&
+                game.solver?._id === myId
+            ) {
                 return 1;
             }
-            if (game.state === gameStates.SOLVING && solverId === myId) {
+            if (game.state === gameStates.NEW && game.solver?._id === myId) {
                 return 2;
             }
-            if (game.state === gameStates.NEW && solverId === myId) {
+            if (game.creator?._id === myId) {
                 return 3;
             }
-            if (game.solver) {
-                return 4;
-            }
-            return 5;
+            return 4;
         };
 
         newGames.sort((a, b) => {
             // The order of games to present to the user is:
             // 0 - View solves (SOLVED)
-            // 1 - We solved a puzzle (SOLVED)
-            // 2 - Continue solving (SOLVING)
-            // 3 - Start solving new puzzles (NEW)
-            // 4 - Show puzzles we created that are waiting to be solved
+            // 1 - We solved a puzzle (SOLVED) or continue solving (SOLVING)
+            // 2 - Start solving new puzzles (NEW)
+            // 3 - Show puzzles we created that are waiting to be solved
             // Within each group, sort by creation time
             const scoreA = getFirstTieBreaker(a);
             const scoreB = getFirstTieBreaker(b);
             if (scoreA < scoreB) return -1;
             if (scoreA > scoreB) return 1;
-
             const dateA = new Date(a.createTime).getTime();
             const dateB = new Date(b.createTime).getTime();
-
             if (dateA < dateB) return -1;
             if (dateA > dateB) return 1;
             return 0;
@@ -112,33 +106,60 @@ class Games extends Component {
         });
     }
 
-    setCoins = (coins) => {
-        this.setState({ coins });
-    };
+    async getRandomBotPuzzle() {
+        try {
+            const data = (await getBotPuzzle()).data;
+            const currGames = this.state.games;
+            this.setState({
+                games: [...currGames, data],
+                error: '',
+            });
+        } catch (ex) {
+            console.log(ex);
+            if (ex.response && ex.response.data) {
+                this.setState({
+                    games: [],
+                    error: `Error getting bot puzzle: ${ex.response.data}`,
+                });
+            } else {
+                this.setState({
+                    games: [],
+                    error: 'Error getting bot puzzle',
+                });
+            }
+        }
+    }
+
+    getData(games) {
+        const user = getCurrentUser();
+        const myId = (user && user._id) || '-1';
+        let workableGames = 0;
+        for (const game of games) {
+            const solverId = (game.solver && game.solver._id) || '';
+            if (
+                user &&
+                (game.creatorBot || solverId === myId) &&
+                game.state !== gameStates.SOLVED
+            ) {
+                ++workableGames;
+            }
+        }
+        if (!this.state.loading && user && workableGames === 0) {
+            return [
+                ...games,
+                {
+                    _id: '0',
+                    getRandomBotPuzzle: this.getRandomBotPuzzle.bind(this),
+                },
+            ];
+        } else {
+            return games;
+        }
+    }
 
     render() {
         return (
             <>
-                {this.state.coins !== null && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            right: 25,
-                            flexDirection: 'row',
-                            alignSelf: 'center',
-                            display: 'flex',
-                        }}
-                    >
-                        <Icon
-                            name="dots-horizontal-circle-outline"
-                            backgroundColor={colors.gold}
-                            iconColor={colors.primary}
-                            size={25}
-                            marginRight={5}
-                        ></Icon>
-                        <span>{this.state.coins}</span>
-                    </div>
-                )}
                 <div style={{ height: 30 }} />
                 {this.state.error && (
                     <div className="alert alert-danger">{this.state.error}</div>
@@ -148,7 +169,7 @@ class Games extends Component {
                         {this.state.message}
                     </div>
                 )}
-                {this.state.games.map((game) => {
+                {this.getData(this.state.games).map((game) => {
                     return (
                         <Card
                             key={game._id}
@@ -159,8 +180,6 @@ class Games extends Component {
                             onRemoveGame={(gameId) => {
                                 this.removeGame(gameId);
                             }}
-                            setCoins={this.setCoins}
-                            coins={this.state.coins}
                             activeGameId={this.state.activeGameId}
                         />
                     );

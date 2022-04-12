@@ -14,7 +14,6 @@ class ViewSolve extends Component {
         ),
         letters: this.getInitialLetters(),
         animating: false,
-        deletedFromServer: false,
     };
     cellsStatic = utils.decompress(this.props.boardString);
     cancel = false;
@@ -223,35 +222,19 @@ class ViewSolve extends Component {
         return (
             <>
                 <CardHeader
+                    chevron={this.state.expanded ? 'up' : 'down'}
+                    iconColor={this.props.solverColor}
+                    iconName={this.props.solverIcon}
                     title={`View ${this.props.solver}'s attempt to solve`}
                     onClick={async () => {
                         if (!this.state.expanded) {
-                            if (
-                                this.props.notifyServer &&
-                                !this.state.deletedFromServer
-                            ) {
-                                // notify server that the solve has been viewed
-                                viewSolve({ gameId: this.props.gameId }); // does not need to await
-                                this.setState({ deletedFromServer: true });
-                            }
+                            // notify server that the solve has been viewed
+                            viewSolve({ gameId: this.props.gameId }); // does not need to await
                             this.startAnimation();
                             this.setState({ expanded: true });
                         } else {
                             this.setState({ expanded: false });
                         }
-                    }}
-                    onDelete={(e) => {
-                        // trash can icon was clicked and do not want to have the
-                        // onClick handler above to be called as well
-                        e.stopPropagation();
-                        if (
-                            this.props.notifyServer &&
-                            !this.state.deletedFromServer
-                        ) {
-                            viewSolve({ gameId: this.props.gameId });
-                            this.setState({ deletedFromServer: true });
-                        }
-                        this.props.onRemoveGame(this.props.gameId);
                     }}
                 ></CardHeader>
                 {!this.state.expanded && (
