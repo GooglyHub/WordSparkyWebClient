@@ -72,7 +72,13 @@ class Form extends Component {
         );
     }
 
-    renderInput(name, label, type = 'text', readOnly = false) {
+    renderInput(
+        name,
+        label,
+        type = 'text',
+        readOnly = false,
+        uppercaseOnly = false
+    ) {
         const { data, errors } = this.state;
         return (
             <Input
@@ -83,6 +89,7 @@ class Form extends Component {
                 readOnly={readOnly}
                 error={errors[name]}
                 onChange={this.handleChange}
+                uppercaseOnly={uppercaseOnly}
             ></Input>
         );
     }

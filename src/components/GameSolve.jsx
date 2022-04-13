@@ -7,6 +7,7 @@ import AppKeyboard from './AppKeyboard';
 import { solvePuzzle, revealLetter } from '../services/gamesService';
 import Icon from './common/icon';
 import { deleteGame } from '../services/gamesService';
+import { getCurrentUser } from '../services/authService';
 
 /*
 GameSolve component
@@ -238,7 +239,7 @@ class GameSolve extends Component {
                 gameId: this.props.gameId,
                 cursorIdx: this.state.cursor.idx,
             });
-            this.handlePress({ key: response.data.letter });
+            this.handlePress({ key: response.data });
         } catch (error) {
             this.setState({
                 error: error.message + ', ' + error.response.data,
@@ -247,12 +248,7 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        const REVEAL_PRICE = 50;
-        if (
-            window.confirm(
-                `Spend ${REVEAL_PRICE} coins to get a hint on the selected letter?`
-            )
-        ) {
+        if (window.confirm('Get a hint on the selected letter?')) {
             this.handleReveal();
         }
     }
@@ -273,6 +269,8 @@ class GameSolve extends Component {
             solved,
         } = this.state;
         const { creator, creatorColor, creatorIcon, hint } = this.props;
+        const user = getCurrentUser();
+
         return (
             <>
                 <CardHeader
@@ -284,26 +282,20 @@ class GameSolve extends Component {
                     }}
                     title={`Solve ${creator}'s puzzle`}
                     onDelete={
-                        this.props.onRemoveGame
+                        this.props.onRemoveGame && !solved
                             ? (e) => {
                                   e.stopPropagation();
-                                  if (solved) {
+                                  if (
+                                      window.confirm(
+                                          'Are you sure you want to delete this puzzle?'
+                                      )
+                                  ) {
+                                      deleteGame({
+                                          gameId: this.props.gameId,
+                                      });
                                       this.props.onRemoveGame(
                                           this.props.gameId
                                       );
-                                  } else {
-                                      if (
-                                          window.confirm(
-                                              'Are you sure you want to delete this puzzle?'
-                                          )
-                                      ) {
-                                          deleteGame({
-                                              gameId: this.props.gameId,
-                                          });
-                                          this.props.onRemoveGame(
-                                              this.props.gameId
-                                          );
-                                      }
                                   }
                               }
                             : null
@@ -364,25 +356,27 @@ class GameSolve extends Component {
                                 paddingTop: 5,
                             }}
                         >
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    right: 20,
-                                    margin: 5,
-                                    flexDirection: 'row',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => {
-                                    this.handleHintPress();
-                                }}
-                            >
-                                <Icon
-                                    name="lightbulb-on-outline"
-                                    size={25}
-                                    backgroundColor={colors.primary}
-                                    marginRight={5}
-                                ></Icon>
-                            </div>
+                            {user.isPremium && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        right: 20,
+                                        margin: 5,
+                                        flexDirection: 'row',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                        this.handleHintPress();
+                                    }}
+                                >
+                                    <Icon
+                                        name="lightbulb-on-outline"
+                                        size={25}
+                                        backgroundColor={colors.primary}
+                                        marginRight={5}
+                                    ></Icon>
+                                </div>
+                            )}
                             <div>
                                 <button
                                     className="btn btn-primary"

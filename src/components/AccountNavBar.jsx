@@ -21,19 +21,11 @@ const AccountNavBar = () => {
                         <li>
                             <NavLink
                                 className="nav-item nav-link"
-                                to="/account/vercode"
+                                to="/account/changepw"
                             >
-                                Verification Code
+                                Change Password
                             </NavLink>
                         </li>
-                        {/* <li>
-                        <NavLink
-                            className="nav-item nav-link"
-                            to="/account/bots"
-                        >
-                            Puzzle Bots
-                        </NavLink>
-                    </li> */}
                     </>
                 </ul>
             </nav>

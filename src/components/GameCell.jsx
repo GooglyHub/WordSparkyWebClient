@@ -103,6 +103,9 @@ const getStylesForCell = (cell, hasCursor, changeColorOnHover) => {
     } else if (cell.state === 'wrong') {
         style.backgroundColor = colors.wrong;
         style.color = colors.black;
+    } else if (cell.state === 'reveal') {
+        style.backgroundColor = colors.reveal;
+        style.color = colors.lightgray;
     } else {
         if (!changeColorOnHover) {
             // if changeColorOnHover is true, do not set backgroundColor here

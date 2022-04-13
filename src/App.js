@@ -8,11 +8,10 @@ import Games from './components/Games';
 import Create from './components/Create';
 import Account from './components/Account';
 import Help from './components/Help';
-import { getCurrentUser, getJwt, loginWithToken } from './services/authService';
+import { getCurrentUser, getJwt } from './services/authService';
 import ProtectedRoute from './components/common/protectedRoute';
 import ProtectedAdminRoute from './components/common/protectedAdminRoute';
 import Bots from './components/Bots';
-import { checkToken } from './services/usersService';
 import './App.css';
 import jwtDecode from 'jwt-decode';
 
@@ -23,20 +22,7 @@ function App() {
         // Check the server if the auth token needs to be updated
         async function f() {
             try {
-                let token = getJwt();
                 if (token) {
-                    const resp = await checkToken(token);
-                    if (
-                        resp &&
-                        resp.data &&
-                        resp.data.valid &&
-                        resp.data.token
-                    ) {
-                        if (resp.data.token !== token) {
-                            token = resp.data.token;
-                            loginWithToken(token);
-                        }
-                    }
                     const user = jwtDecode(token);
                     setCurrUser(user);
                 }

@@ -134,11 +134,43 @@ class ViewSolve extends Component {
         }
         await this.sleep(1000);
         for (let k = 1; k < this.props.guessedLetters.length; ++k) {
+            // If guessedLetters[k] contains only '*' and '?' then it is a reveal
+            // otherwise it is a guess
+            if (
+                this.props.guessedLetters[k][0] === '*' ||
+                this.props.guessedLetters[k][0] === '?'
+            ) {
+                let pos = 0;
+                const newCells = [];
+                for (let ii = 0; ii < currentCells.length; ++ii) {
+                    newCells.push([...currentCells[ii]]);
+                }
+                for (let i = 0; i < currentCells.length; ++i) {
+                    for (let j = 0; j < currentCells[i].length; ++j) {
+                        if (
+                            currentCells[i][j].state === 'unknown' ||
+                            currentCells[i][j].state === 'reveal'
+                        ) {
+                            if (this.props.guessedLetters[k][pos++] === '?') {
+                                newCells[i][j].state = 'reveal';
+                            }
+                        }
+                    }
+                }
+                this.setState({ cells: newCells });
+                currentCells = newCells;
+                await this.sleep(2000);
+                continue;
+            }
+
             let pos = 0;
             // Show the guessed letters
             for (let i = 0; i < currentCells.length; ++i) {
                 for (let j = 0; j < currentCells[i].length; ++j) {
-                    if (currentCells[i][j].state === 'unknown') {
+                    if (
+                        currentCells[i][j].state === 'unknown' ||
+                        currentCells[i][j].state === 'reveal'
+                    ) {
                         const newCells = [];
                         for (let ii = 0; ii < currentCells.length; ++ii) {
                             newCells.push([...currentCells[ii]]);

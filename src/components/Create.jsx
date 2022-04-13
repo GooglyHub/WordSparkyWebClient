@@ -1,7 +1,7 @@
 import React from 'react';
 import Joi from 'joi-browser';
 import { getFriends } from '../services/friendsService';
-import { addGame, addGameForBot } from '../services/gamesService';
+import { addGame } from '../services/gamesService';
 import Form from './common/form';
 
 const hints = [
@@ -14,7 +14,7 @@ const hints = [
     { value: 'I FORGOT ...', _id: '7' },
     { value: "I'M GLAD ...", _id: '8' },
     { value: 'I WONDER ...', _id: '9' },
-    { value: 'CONFESSION', _id: '10' },
+    { value: 'CONFESSION ...', _id: '10' },
 ];
 
 class Create extends Form {
@@ -35,24 +35,26 @@ class Create extends Form {
         answer: Joi.string()
             .regex(/(?=.*[A-Za-z])^[-A-Za-z0-9.,?!'" ]+$/, 'answer')
             .min(1)
-            .max(128)
+            .max(100)
             .label('Answer'),
         solver: Joi.string().min(1).label('Solver'),
     };
 
     async componentDidMount() {
-        const sparkyBot = {
-            _id: '-1',
-            name: 'Sparky Bot',
-        };
         const findUser = {
             _id: '*',
-            name: 'Find User by ID...',
+            name: 'Find Username...',
         };
         try {
             const response = await getFriends();
             this.setState({
-                friends: [...response.data, sparkyBot, findUser],
+                friends: [
+                    findUser,
+                    ...response.data.map((friend) => ({
+                        _id: friend._id,
+                        name: friend.username,
+                    })),
+                ],
             });
         } catch (ex) {
             console.log(ex);
@@ -76,19 +78,14 @@ class Create extends Form {
                 hint: hintString.toUpperCase(),
                 solverId: solver,
             };
-            if (solver === '-1') {
-                delete game.solverId;
-                await addGameForBot(game);
-            } else {
-                if (solver[0] === '*') {
-                    if (solver.length <= 1) {
-                        return;
-                    }
-                    delete game.solverId;
-                    game['solverUserId'] = solver.substring(1);
+            if (solver[0] === '*') {
+                if (solver.length <= 1) {
+                    return;
                 }
-                await addGame(game);
+                delete game.solverId;
+                game['solverName'] = solver.substring(1);
             }
+            await addGame(game);
             this.setState({
                 data: {
                     hint: '1',
@@ -134,7 +131,7 @@ class Create extends Form {
                 </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
                     {this.renderSelect('hint', 'Hint', hints, 'value', false)}
-                    {this.renderInput('answer', 'Answer')}
+                    {this.renderInput('answer', 'Answer', 'text', false, true)}
                     {this.renderSelect(
                         'solver',
                         'Send to',
@@ -145,14 +142,14 @@ class Create extends Form {
                             if (val === '*') {
                                 // the user selected "Find User by Id"
                                 // (refer to findUser._id above)
-                                const userId = prompt('ID:');
+                                const username = prompt('Username:');
                                 if (
-                                    userId &&
-                                    userId.length > 0 &&
-                                    userId.length < 16
+                                    username &&
+                                    username.length > 0 &&
+                                    username.length <= 16
                                 ) {
                                     const updatedFriends = this.state.friends;
-                                    let newId = `*${userId}`;
+                                    let newId = `*${username}`;
                                     let found = false;
                                     for (
                                         let i = 0;
@@ -167,7 +164,7 @@ class Create extends Form {
                                     if (!found) {
                                         updatedFriends.push({
                                             _id: newId,
-                                            name: `ID: ${userId}`,
+                                            name: username,
                                         });
                                         this.setState({
                                             friends: updatedFriends,

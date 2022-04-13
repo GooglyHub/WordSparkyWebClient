@@ -2,10 +2,9 @@ import Form from './common/form';
 import Joi from 'joi-browser';
 import icons from '../common/icons';
 import colors from '../common/colors';
-import { updateProfile, getNumRenames } from '../services/usersService';
+import { updateProfile } from '../services/usersService';
 import { loginWithToken } from '../services/authService';
 import Icon from './common/icon';
-import profile from '../common/profile';
 
 class Profile extends Form {
     state = {
@@ -17,7 +16,6 @@ class Profile extends Form {
         errors: {},
         error: '',
         message: '',
-        renameEnabled: false,
     };
 
     schema = {
@@ -25,21 +23,6 @@ class Profile extends Form {
         icon: Joi.string().required(),
         color: Joi.string().required(),
     };
-
-    updateRenameEnabled = async () => {
-        try {
-            const resp = await getNumRenames();
-            const renames = resp.data.renames || 0;
-            this.setState({ renameEnabled: renames > 0 ? true : false });
-        } catch (error) {
-            console.log(error);
-            this.setState({ renameEnabled: false });
-        }
-    };
-
-    async componentDidMount() {
-        this.updateRenameEnabled();
-    }
 
     doSubmit = async () => {
         try {
@@ -58,7 +41,7 @@ class Profile extends Form {
                 error: '',
                 message: 'Profile has been updated',
             });
-            loginWithToken(response.data);
+            loginWithToken(response.data.token);
             window.location = '/';
         } catch (error) {
             if (error.response) {
@@ -89,24 +72,8 @@ class Profile extends Form {
                 >
                     Update Profile
                 </div>
-                <div
-                    style={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        marginTop: 5,
-                        marginBottom: 5,
-                    }}
-                >
-                    ID: {this.props.user.id}
-                </div>
                 <form autoComplete="off" onSubmit={this.handleSubmit}>
-                    {this.renderInput(
-                        'name',
-                        'Name',
-                        'text',
-                        !this.state.renameEnabled
-                    )}
+                    {this.renderInput('name', 'Name', 'text', true)}
                     {this.renderSelect('icon', 'Icon', icons, 'label', false)}
                     {this.renderSelect(
                         'color',

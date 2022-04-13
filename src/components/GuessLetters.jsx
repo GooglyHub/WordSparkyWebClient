@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import CardHeader from './CardHeader';
 import GameBody from './GameBody';
 import utils from '../common/utils';
-import { guessLetters } from '../services/gamesService';
+import {
+    guessLetters,
+    guessLettersForBotPuzzle,
+} from '../services/gamesService';
 import { deleteGame, rejectBotPuzzle } from '../services/gamesService';
 import AppKeyboard from './AppKeyboard';
 import colors from './../config/colors';
@@ -49,21 +52,42 @@ class GuessLetters extends Component {
             letters += this.state.letters[i];
         }
 
-        try {
-            const response = await guessLetters({
-                guess: letters,
-                gameId: this.props.gameId,
-            });
-            this.props.onUpdateGame(response.data);
-        } catch (ex) {
-            if (ex.response && ex.response.data) {
-                this.setState({
-                    error: ex.response.data,
+        if (this.props.botPuzzleId) {
+            try {
+                const response = await guessLettersForBotPuzzle({
+                    guess: letters,
+                    botPuzzleId: this.props.botPuzzleId,
                 });
-            } else {
-                this.setState({
-                    error: 'Error submitting request',
+                this.props.onUpdateGame(response.data);
+            } catch (ex) {
+                console.log(ex);
+                if (ex.response && ex.response.data) {
+                    this.setState({
+                        error: ex.response.data,
+                    });
+                } else {
+                    this.setState({
+                        error: 'Error submitting request',
+                    });
+                }
+            }
+        } else {
+            try {
+                const response = await guessLetters({
+                    guess: letters,
+                    gameId: this.props.gameId,
                 });
+                this.props.onUpdateGame(response.data);
+            } catch (ex) {
+                if (ex.response && ex.response.data) {
+                    this.setState({
+                        error: ex.response.data,
+                    });
+                } else {
+                    this.setState({
+                        error: 'Error submitting request',
+                    });
+                }
             }
         }
     };

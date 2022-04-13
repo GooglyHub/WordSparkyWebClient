@@ -2,26 +2,41 @@ import React from 'react';
 import Form from './common/form';
 import Joi from 'joi-browser';
 import { changePassword } from '../services/usersService';
-import utils from './../common/utils';
 
 class ChangePassword extends Form {
     state = {
-        verCode: '',
+        data: {
+            username: this.props.user.username,
+            password: '',
+        },
         errors: {},
         error: null,
+        message: null,
     };
 
-    genCode = async () => {
+    schema = {
+        username: Joi.string().label('Username'),
+        password: Joi.string().required().min(1).max(256).label('Password'),
+    };
+
+    doSubmit = async () => {
         try {
-            const password = utils.generateVerificationCode();
+            const { password } = this.state.data;
             const resp = await changePassword({ password });
-            this.setState({ error: null, verCode: password });
+            if (resp.status === 200) {
+                this.setState({ error: null, message: 'Password updated' });
+            } else {
+                this.setState({
+                    error: resp.data,
+                    message: null,
+                });
+            }
         } catch (error) {
-            let errorMsg = 'Error generating verification code';
+            let errorMsg = 'Error changing password';
             if (error.response && error.response.data) {
                 errorMsg = error.response.data;
             }
-            this.setState({ error: errorMsg, verCode: '' });
+            this.setState({ error: errorMsg, message: null });
         }
     };
 
@@ -30,38 +45,27 @@ class ChangePassword extends Form {
             <>
                 <div
                     style={{
-                        width: 600,
+                        width: 400,
                         padding: 10,
                     }}
                 >
-                    <p>
-                        If you play Word Sparky on this device only, then you
-                        may skip this page.
-                    </p>
-                    <p>
-                        Using the ID and verification code below, you can log in
-                        and play Word Sparky with this account on other devices.
-                    </p>
-                    <p
-                        style={{
-                            fontSize: 24,
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                        }}
-                    >{`ID: ${this.props.user.id}`}</p>
-                    <p
-                        style={{
-                            fontSize: 24,
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                        }}
-                    >{`Verification Code: ${this.state.verCode}`}</p>
-                    <button className="btn btn-warning" onClick={this.genCode}>
-                        Generate Code
-                    </button>
+                    <form onSubmit={this.handleSubmit}>
+                        {this.renderInput('username', 'Username', 'text', true)}
+                        {this.renderInput(
+                            'password',
+                            'New password',
+                            'password'
+                        )}
+                        {this.renderButton('Update')}
+                    </form>
                 </div>
                 {this.state.error && (
                     <div className="alert alert-danger">{this.state.error}</div>
+                )}
+                {this.state.message && (
+                    <div className="alert alert-warning">
+                        {this.state.message}
+                    </div>
                 )}
             </>
         );

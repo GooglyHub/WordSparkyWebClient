@@ -17,6 +17,7 @@ const colors = {
     lightgray: '#f8f4f4',
     medium: '#6e6969',
     primary: '#4f4789',
+    reveal: '#b65fcf',
     right: 'greenyellow',
     secondary: '#ffb17a',
     white: '#fffded',

@@ -81,7 +81,7 @@ class Card extends Component {
                             onRemoveGame={onRemoveGame}
                         />
                     )}
-                {solverId === myId &&
+                {(solverId === myId || game.creatorBot) &&
                     (game.state === gameStates.SOLVING ||
                         game.state === gameStates.SOLVED) && (
                         <GameSolve

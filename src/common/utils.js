@@ -104,16 +104,11 @@ const randomString = (len, charSet) => {
     return str;
 };
 
-const generateVerificationCode = () => {
-    return randomString(9, '123456789');
-};
-
 const utils = {
     decompress,
     getBoardString,
     getBoardStringForString,
     getAgeString,
-    generateVerificationCode,
 };
 
 export default utils;

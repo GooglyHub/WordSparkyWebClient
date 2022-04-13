@@ -11,7 +11,7 @@ export default {
         if (user && user.isPremium) {
             return user.icon;
         } else if (user) {
-            return 'emoticon';
+            return 'account';
         } else {
             return 'account-question';
         }
@@ -21,7 +21,7 @@ export default {
         if (user && user.isPremium) {
             return user.color;
         } else if (user) {
-            return 'slategray';
+            return 'blue';
         } else {
             return 'blue';
         }
