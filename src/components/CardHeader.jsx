@@ -42,27 +42,28 @@ function CardHeader({
                     </div>
                 )}
                 {title}
-                {onDelete && (
-                    <div
-                        style={{ paddingLeft: 10, cursor: 'pointer' }}
-                        onClick={onDelete}
-                    >
-                        <Icon
-                            name="trash-can"
-                            size={25}
-                            backgroundColor={colors.primary}
-                            marginRight={5}
-                        ></Icon>
-                    </div>
-                )}
                 <div
                     style={{
                         position: 'absolute',
                         right: 20,
                         flexDirection: 'row',
+                        display: 'flex',
                         margin: 5,
                     }}
                 >
+                    {onDelete && (
+                        <div
+                            style={{ paddingLeft: 10, cursor: 'pointer' }}
+                            onClick={onDelete}
+                        >
+                            <Icon
+                                name="trash-can"
+                                size={25}
+                                backgroundColor={colors.primary}
+                                marginRight={5}
+                            ></Icon>
+                        </div>
+                    )}
                     {chevron === 'down' && (
                         <Icon
                             name="chevron-down"

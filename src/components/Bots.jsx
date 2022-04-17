@@ -144,7 +144,6 @@ class Bots extends Form {
                             }}
                         >
                             <h3>{bot.name}</h3>
-                            <span>{bot.hint}</span>
                             {this.renderInput(`answer${idx}`, '')}
                             <ul>
                                 {this.state.suggestions[idx].map(

@@ -22,6 +22,7 @@ function App() {
         // Check the server if the auth token needs to be updated
         async function f() {
             try {
+                let token = getJwt();
                 if (token) {
                     const user = jwtDecode(token);
                     setCurrUser(user);
