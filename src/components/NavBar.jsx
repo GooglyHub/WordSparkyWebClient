@@ -72,7 +72,7 @@ const NavBar = ({ user }) => {
                         </NavLink>
                     </li>
                 )}
-                {user && user.isPremium && (
+                {user && (
                     <li>
                         <NavLink className="nav-item nav-link" to="/logout">
                             Logout
