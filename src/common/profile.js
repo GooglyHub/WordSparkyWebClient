@@ -1,4 +1,4 @@
-export default {
+const profileGetters = {
     getUsername: (user) => {
         if (user) {
             return user.username;
@@ -27,3 +27,5 @@ export default {
         }
     },
 };
+
+export default profileGetters;
