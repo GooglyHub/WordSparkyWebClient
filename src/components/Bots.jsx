@@ -39,7 +39,7 @@ class Bots extends Form {
             const newSchema = {};
             for (let i = 0; i < n; ++i) {
                 newSchema[`answer${i}`] = Joi.string()
-                    .regex(/^[-A-Za-z0-9.,?!'" ]*$/, 'answer')
+                    .regex(/^[-A-Za-z0-9.,?!'"$ ]*$/, 'answer')
                     .allow('')
                     .max(100)
                     .label('Answer');

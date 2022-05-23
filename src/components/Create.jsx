@@ -33,7 +33,7 @@ class Create extends Form {
     schema = {
         hint: Joi.string().min(1).label('Hint'),
         answer: Joi.string()
-            .regex(/(?=.*[A-Za-z])^[-A-Za-z0-9.,?!'" ]+$/, 'answer')
+            .regex(/(?=.*[A-Za-z])^[-A-Za-z0-9.,?!'"$ ]+$/, 'answer')
             .min(1)
             .max(100)
             .label('Answer'),
