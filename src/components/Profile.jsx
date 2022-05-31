@@ -41,7 +41,7 @@ class Profile extends Form {
                 error: '',
                 message: 'Profile has been updated',
             });
-            loginWithToken(response.data.token);
+            loginWithToken(response.data.user.token);
             window.location = '/';
         } catch (error) {
             if (error.response) {

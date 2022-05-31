@@ -8,6 +8,7 @@ import { solvePuzzle, revealLetter } from '../services/gamesService';
 import Icon from './common/icon';
 import { deleteGame } from '../services/gamesService';
 import { getCurrentUser } from '../services/authService';
+import { getReveals } from '../services/revealService';
 
 /*
 GameSolve component
@@ -33,10 +34,11 @@ class GameSolve extends Component {
         initialized: false,
         letters: [],
         message: '',
+        reveals: 0,
         solved: this.props.showSolved,
     };
 
-    static updateState(tempProps, tempState) {
+    static async updateState(tempProps, tempState) {
         const { expandedInitially, guesses, guessedLetters, showSolved } =
             tempProps;
         const boardString = utils.getBoardString(guesses);
@@ -90,6 +92,15 @@ class GameSolve extends Component {
                 }
             }
         }
+
+        let initialReveals = 0;
+        try {
+            const response = await getReveals();
+            initialReveals = response.data.reveals;
+        } catch (ex) {
+            console.log(ex);
+        }
+
         return {
             cells: initialCells,
             cellsStatic: utils.decompress(boardString),
@@ -106,19 +117,22 @@ class GameSolve extends Component {
             guessedLettersLength: guessedLetters.length,
             initialized: true,
             letters: initialLetters,
+            reveals: initialReveals,
             solved: showSolved,
         };
     }
 
-    static getDerivedStateFromProps(tempProps, tempState) {
+    static async getDerivedStateFromProps(tempProps, tempState) {
         if (tempProps.guessedLetters.length > tempState.guessedLettersLength) {
-            return GameSolve.updateState(tempProps, tempState);
+            const ret = await GameSolve.updateState(tempProps, tempState);
+            return ret;
         }
         return null;
     }
 
-    componentDidMount() {
-        this.setState(GameSolve.updateState(this.props, this.state));
+    async componentDidMount() {
+        const newState = await GameSolve.updateState(this.props, this.state);
+        this.setState(newState);
     }
 
     setExpanded = (expanded) => {
@@ -240,6 +254,12 @@ class GameSolve extends Component {
                 cursorIdx: this.state.cursor.idx,
             });
             this.handlePress({ key: response.data });
+            if (this.state.reveals > 0) {
+                const updatedReveals = this.state.reveals - 1;
+                this.setState({
+                    reveals: updatedReveals,
+                });
+            }
         } catch (error) {
             this.setState({
                 error: error.message + ', ' + error.response.data,
@@ -248,7 +268,13 @@ class GameSolve extends Component {
     }
 
     handleHintPress() {
-        if (window.confirm('Get a hint on the selected letter?')) {
+        if (this.state.reveals < 1) {
+            alert('You are out of Reveal Tokens');
+        } else if (
+            window.confirm(
+                'Use a Reveal Token to get a hint on the selected letter?'
+            )
+        ) {
             this.handleReveal();
         }
     }
@@ -357,13 +383,14 @@ class GameSolve extends Component {
                             }}
                         >
                             {user.isPremium && (
-                                <div
+                                <span
                                     style={{
                                         position: 'absolute',
                                         right: 20,
                                         margin: 5,
                                         flexDirection: 'row',
                                         cursor: 'pointer',
+                                        display: 'flex',
                                     }}
                                     onClick={() => {
                                         this.handleHintPress();
@@ -375,7 +402,17 @@ class GameSolve extends Component {
                                         backgroundColor={colors.primary}
                                         marginRight={5}
                                     ></Icon>
-                                </div>
+                                    <span
+                                        style={{
+                                            fontSize: 15,
+                                            color: colors.primary,
+                                            fontWeight: 'bold',
+                                            padding: 3,
+                                        }}
+                                    >
+                                        {this.state.reveals}
+                                    </span>
+                                </span>
                             )}
                             <div>
                                 <button
