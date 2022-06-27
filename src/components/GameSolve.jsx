@@ -38,7 +38,7 @@ class GameSolve extends Component {
         solved: this.props.showSolved,
     };
 
-    static async updateState(tempProps, tempState) {
+    static updateState(tempProps, tempState) {
         const { expandedInitially, guesses, guessedLetters, showSolved } =
             tempProps;
         const boardString = utils.getBoardString(guesses);
@@ -93,14 +93,6 @@ class GameSolve extends Component {
             }
         }
 
-        let initialReveals = 0;
-        try {
-            const response = await getReveals();
-            initialReveals = response.data.reveals;
-        } catch (ex) {
-            console.log(ex);
-        }
-
         return {
             cells: initialCells,
             cellsStatic: utils.decompress(boardString),
@@ -117,22 +109,29 @@ class GameSolve extends Component {
             guessedLettersLength: guessedLetters.length,
             initialized: true,
             letters: initialLetters,
-            reveals: initialReveals,
             solved: showSolved,
         };
     }
 
-    static async getDerivedStateFromProps(tempProps, tempState) {
+    static getDerivedStateFromProps(tempProps, tempState) {
         if (tempProps.guessedLetters.length > tempState.guessedLettersLength) {
-            const ret = await GameSolve.updateState(tempProps, tempState);
-            return ret;
+            return GameSolve.updateState(tempProps, tempState);
         }
         return null;
     }
 
     async componentDidMount() {
-        const newState = await GameSolve.updateState(this.props, this.state);
-        this.setState(newState);
+        let numReveals = 0;
+        try {
+            const response = await getReveals();
+            numReveals = response.data.reveals;
+        } catch (error) {
+            console.log(error);
+        }
+        this.setState({
+            ...GameSolve.updateState(this.props, this.state),
+            reveals: numReveals,
+        });
     }
 
     setExpanded = (expanded) => {

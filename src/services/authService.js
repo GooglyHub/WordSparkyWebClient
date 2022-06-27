@@ -10,19 +10,14 @@ const login = async (username, password) => {
         password,
     });
     if (response?.data?.user?.isPremium !== true) {
-        throw {
-            response: {
-                data: {
-                    error: 'Only premium users can use website',
-                },
-            },
-        };
+        return 'Only premium users can use website';
     }
     const authToken = response.data.user.token;
     // todo: also extract the user and friends here
     // response.data.user
     // response.data.friends
     localStorage.setItem(tokenKey, authToken);
+    return '';
 };
 
 const loginWithToken = (authToken) => {
