@@ -14,7 +14,7 @@ const NavBar = ({ user }) => {
                     width={60}
                     height={60}
                     style={{ marginRight: 20 }}
-                    alt="cute shark on an orange background"
+                    alt="word sparky logo"
                 />
 
                 {user && user.isPremium && (
