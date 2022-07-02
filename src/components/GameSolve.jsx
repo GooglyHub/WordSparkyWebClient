@@ -35,6 +35,7 @@ class GameSolve extends Component {
         letters: [],
         message: '',
         reveals: 0,
+        rewarded: false,
         solved: this.props.showSolved,
     };
 
@@ -153,11 +154,22 @@ class GameSolve extends Component {
                 gameId,
             });
             if (response.data.state === 'SOLVED') {
-                this.setState({
-                    failed: false,
-                    solved: true,
-                    error: '',
-                });
+                if (response.data.rewarded === true) {
+                    const updatedReveals = this.state.reveals - 1;
+                    this.setState({
+                        failed: false,
+                        solved: true,
+                        error: '',
+                        rewarded: true,
+                        reveals: updatedReveals,
+                    });
+                } else {
+                    this.setState({
+                        failed: false,
+                        solved: true,
+                        error: '',
+                    });
+                }
             } else if (response.data.state === 'SOLVING') {
                 this.setState({
                     failed: true,
@@ -291,6 +303,7 @@ class GameSolve extends Component {
             letters,
             initialized,
             message,
+            rewarded,
             solved,
         } = this.state;
         const { creator, creatorColor, creatorIcon, hint } = this.props;
@@ -326,7 +339,7 @@ class GameSolve extends Component {
                             : null
                     }
                 ></CardHeader>
-                {expanded && solved && (
+                {expanded && solved && !rewarded && (
                     <span
                         style={{
                             backgroundColor: colors.alertSuccessBg,
@@ -335,6 +348,18 @@ class GameSolve extends Component {
                         }}
                     >
                         Congratulations! You solved it!
+                    </span>
+                )}
+                {expanded && solved && rewarded && (
+                    <span
+                        style={{
+                            backgroundColor: colors.alertSuccessBg,
+                            color: colors.alertSuccess,
+                            padding: 15,
+                        }}
+                    >
+                        Congratulations! You have been rewarded one Reveal Token
+                        for solving all of today's bot puzzles.
                     </span>
                 )}
                 {expanded && failed && (
