@@ -133,6 +133,17 @@ class ViewSolve extends Component {
             return;
         }
         await this.sleep(1000);
+
+        // keep a boolean[][] of which cells were revealed
+        const wasRevealed = [];
+        for (let i = 0; i < currentCells.length; ++i) {
+            const tempRow = [];
+            for (let j = 0; j < currentCells[i].length; ++j) {
+                tempRow.push(false);
+            }
+            wasRevealed.push(tempRow);
+        }
+
         for (let k = 1; k < this.props.guessedLetters.length; ++k) {
             // If guessedLetters[k] contains only '*' and '?' then it is a reveal
             // otherwise it is a guess
@@ -141,25 +152,15 @@ class ViewSolve extends Component {
                 this.props.guessedLetters[k][0] === '?'
             ) {
                 let pos = 0;
-                const newCells = [];
-                for (let ii = 0; ii < currentCells.length; ++ii) {
-                    newCells.push([...currentCells[ii]]);
-                }
                 for (let i = 0; i < currentCells.length; ++i) {
                     for (let j = 0; j < currentCells[i].length; ++j) {
-                        if (
-                            currentCells[i][j].state === 'unknown' ||
-                            currentCells[i][j].state === 'reveal'
-                        ) {
+                        if (currentCells[i][j].state === 'unknown') {
                             if (this.props.guessedLetters[k][pos++] === '?') {
-                                newCells[i][j].state = 'reveal';
+                                wasRevealed[i][j] = true;
                             }
                         }
                     }
                 }
-                this.setState({ cells: newCells });
-                currentCells = newCells;
-                await this.sleep(2000);
                 continue;
             }
 
@@ -167,10 +168,20 @@ class ViewSolve extends Component {
             // Show the guessed letters
             for (let i = 0; i < currentCells.length; ++i) {
                 for (let j = 0; j < currentCells[i].length; ++j) {
-                    if (
-                        currentCells[i][j].state === 'unknown' ||
-                        currentCells[i][j].state === 'reveal'
-                    ) {
+                    if (currentCells[i][j].state === 'unknown') {
+                        if (wasRevealed[i][j]) {
+                            // Make it turn purple before showing the guess
+                            const newCells = [];
+                            for (let ii = 0; ii < currentCells.length; ++ii) {
+                                newCells.push([...currentCells[ii]]);
+                            }
+                            newCells[i][j].state = 'reveal';
+                            this.setState({ cells: newCells });
+                            currentCells = newCells;
+                            await this.sleep(2000);
+                            wasRevealed[i][j] = false;
+                        }
+
                         const newCells = [];
                         for (let ii = 0; ii < currentCells.length; ++ii) {
                             newCells.push([...currentCells[ii]]);
@@ -261,7 +272,7 @@ class ViewSolve extends Component {
                     onClick={async () => {
                         if (!this.state.expanded) {
                             // notify server that the solve has been viewed
-                            viewSolve({ gameId: this.props.gameId }); // does not need to await
+                            //viewSolve({ gameId: this.props.gameId }); // does not need to await
                             this.startAnimation();
                             this.setState({ expanded: true });
                         } else {
