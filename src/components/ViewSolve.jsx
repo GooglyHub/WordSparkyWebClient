@@ -272,7 +272,7 @@ class ViewSolve extends Component {
                     onClick={async () => {
                         if (!this.state.expanded) {
                             // notify server that the solve has been viewed
-                            //viewSolve({ gameId: this.props.gameId }); // does not need to await
+                            viewSolve({ gameId: this.props.gameId }); // does not need to await
                             this.startAnimation();
                             this.setState({ expanded: true });
                         } else {
