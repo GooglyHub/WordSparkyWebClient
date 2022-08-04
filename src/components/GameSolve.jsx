@@ -35,7 +35,6 @@ class GameSolve extends Component {
         letters: [],
         message: '',
         reveals: 0,
-        rewarded: false,
         solved: this.props.showSolved,
     };
 
@@ -155,12 +154,14 @@ class GameSolve extends Component {
             });
             if (response.data.state === 'SOLVED') {
                 if (response.data.rewarded === true) {
+                    alert(
+                        `You have been rewarded one Reveal Token for solving all of today's bot puzzles.`
+                    );
                     const updatedReveals = this.state.reveals - 1;
                     this.setState({
                         failed: false,
                         solved: true,
                         error: '',
-                        rewarded: true,
                         reveals: updatedReveals,
                     });
                 } else {
@@ -303,7 +304,6 @@ class GameSolve extends Component {
             letters,
             initialized,
             message,
-            rewarded,
             solved,
         } = this.state;
         const { creator, creatorColor, creatorIcon, hint } = this.props;
@@ -339,7 +339,7 @@ class GameSolve extends Component {
                             : null
                     }
                 ></CardHeader>
-                {expanded && solved && !rewarded && (
+                {expanded && solved && (
                     <span
                         style={{
                             backgroundColor: colors.alertSuccessBg,
@@ -348,18 +348,6 @@ class GameSolve extends Component {
                         }}
                     >
                         Congratulations! You solved it!
-                    </span>
-                )}
-                {expanded && solved && rewarded && (
-                    <span
-                        style={{
-                            backgroundColor: colors.alertSuccessBg,
-                            color: colors.alertSuccess,
-                            padding: 15,
-                        }}
-                    >
-                        Congratulations! You have been rewarded one Reveal Token
-                        for solving all of today's bot puzzles.
                     </span>
                 )}
                 {expanded && failed && (
