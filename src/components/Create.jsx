@@ -5,16 +5,17 @@ import { addGame } from '../services/gamesService';
 import Form from './common/form';
 
 const hints = [
-    { value: 'I CANNOT BELIEVE THAT ...', _id: '1' },
-    { value: "I DIDN'T KNOW THAT ...", _id: '2' },
-    { value: 'TODAY ... ', _id: '3' },
-    { value: 'PLEASE TELL ME ...', _id: '4' },
-    { value: 'I PLAN TO ...', _id: '5' },
-    { value: 'I PREDICT ...', _id: '6' },
-    { value: 'I FORGOT ...', _id: '7' },
-    { value: "I'M GLAD ...", _id: '8' },
-    { value: 'I WONDER ...', _id: '9' },
-    { value: 'CONFESSION ...', _id: '10' },
+    { value: ' ', _id: '1' },
+    { value: 'I CANNOT BELIEVE THAT ...', _id: '2' },
+    { value: "I DIDN'T KNOW THAT ...", _id: '3' },
+    { value: 'TODAY ... ', _id: '4' },
+    { value: 'PLEASE TELL ME ...', _id: '5' },
+    { value: 'I PLAN TO ...', _id: '6' },
+    { value: 'I PREDICT ...', _id: '7' },
+    { value: 'I FORGOT ...', _id: '8' },
+    { value: "I'M GLAD ...", _id: '9' },
+    { value: 'I WONDER ...', _id: '10' },
+    { value: 'CONFESSION ...', _id: '11' },
 ];
 
 class Create extends Form {
