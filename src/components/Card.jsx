@@ -55,7 +55,13 @@ class Card extends Component {
                             boardString={utils.getBoardStringForString(
                                 game.answer
                             )}
+                            gameId={game._id}
                             hint={game.hint}
+                            onRemoveGame={
+                                game.state === gameStates.NEW
+                                    ? onRemoveGame
+                                    : null
+                            }
                             solver={profile.getUsername(game.solver)}
                             solverColor={profile.getColor(game.solver)}
                             solverIcon={profile.getIcon(game.solver)}
