@@ -20,28 +20,12 @@ class Tutorial extends Component {
                 <p>
                     Every day, three bot puzzles are created for your enjoyment.
                 </p>
-                <h4>Video: Bot Puzzles</h4>
-                <video width="320" height="240" controls>
-                    <source src="../BotPuzzles.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
                 <p>
                     However, Word Sparky is more fun if you play with friends.
                     If you have a friend who also plays Word Sparky, you can
                     send them custom-made puzzles (both of you must be
                     registered).
                 </p>
-                <h4>Video: How To Create A Puzzle</h4>
-                <video width="320" height="240" controls>
-                    <source src="../CreatePuzzle.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-                <p>The Home Screen shows all of your "active" puzzles.</p>
-                <h4>Video: Home Screen</h4>
-                <video width="320" height="240" controls>
-                    <source src="../HomeScreen.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
                 <p>
                     Visit our YouTube page (GooglyPower Software) for more
                     videos on how to play.
